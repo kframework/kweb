@@ -9,15 +9,26 @@ Setup
 Setup is fairly simple.  First, ensure you have Python 2.7 installed.
 
 Then, perform the following steps (Python is short for your Python interpreter).
+
 $ python virtalenv.py flask
+
 $ source flask/bin/activate
+
 $ pip install flask==0.9 flask-login sqlalchemy==0.7.9 flask-sqlalchemy==0.16 sqlalchemy-migrate flask-wtf ansi2html
+
 $ cp sample_conig.py config.py
+
 $ cd [directory for file storage]
+
 $ mkdir default anon results
+
 $ cd [app dir]
+
+
 $ vi config.py // UPDATE THE FOLDER PATHS
+
 $ python db_create.py
+
 $ python run.py
 
 Navigate to localhost:8080 and you're all set!
@@ -44,7 +55,6 @@ JavaScript:
 HTML:
 - Four lines per indent
 - Container tags' children should be indented one level
-- 
 
 CSS:
 - No guidelines, keep it readable.
