@@ -1,0 +1,25 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
+{% block content %}
+    <div class="row-fluid" style="padding-bottom:20px;">
+        <div class="span5 offset1 content-left">
+            <h3>Welcome!<small> Register below.</small></h3>
+            <form name=login method=post action="{{ url_for('login') }}">
+                {{ render_field(registerform.email) }}
+                {{ render_field(registerform.password) }}
+                {{ render_field(registerform.confirm) }}
+                <p><input type=submit value=Register class="btn btn-success" >
+            </form>
+        </div>
+        <div class="span5 offset1">
+            <h3>Welcome back!<small> Login below.</small></h3>
+            <form name=register method=post action="{{ url_for('login') }}">
+                {{ render_field(loginform.email) }}
+                {{ render_field(loginform.password) }}
+            <p><input type=submit value=Login class="btn btn-primary">
+            </form>
+        	<br>
+        	<p><a href="{{ url_for('forgot') }}">Help, I forgot my password!</a></p>
+        </div>
+    </div>
+{% endblock %}

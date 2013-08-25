@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row-fluid">
+        <h1 class="span10 offset1">Welcome to kweb! <br><small> A new web-based research IDE developed by the <a href="http://fsl.cs.uiuc.edu/">Formal Systems Lab</a> at <a href="http://illinois.edu/">UIUC</a> for the <a href="http://kframework.org">K project</a>.</small></h1>
+    </div>
+    <div class="row-fluid">
+        <div class="hero-unit span6 pull-left">
+            <h1>Execute</h1>
+            <p>Use cutting edge formal verification tools in browser, including K, a semantics framework allowing you to formally define programming languages through a simple set of rewrite rules.</p>
+            <a href="{{url_for('base_run')}}" class="btn btn-primary btn-large">
+                Try One
+            </a>
+        </div>
+
+        <div class="hero-unit span6 pull-right">
+            <h1>Learn</h1>
+            <p>Sign up for your own kweb account to access additional collections and save your work in the cloud and work from anywhere!  We're building fast, so check soon for more account features.</p>
+            <a href="{{url_for('login')}}" class="btn btn-primary btn-large">
+                Sign Up
+            </a>
+        </div>
+    </div>
+{% endblock %}

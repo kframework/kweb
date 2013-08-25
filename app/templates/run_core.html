@@ -1,0 +1,47 @@
+{% if not g.user or g.user.is_anonymous() %}
+	<div class="alert alert-info text-center">
+		You are currently working on a temporary workspace with access to limited collections.  To save changes permanently on FSL's servers, <a href="{{ url_for('login') }}" target="_blank">sign up for an account</a>.
+	</div>
+{% endif %}
+<div class="row-fluid">
+    <h1 style="white-space:nowrap; overflow:hidden; display:inline;" class="pull-left">{{title}} <small><span id="path" style="white-space:nowrap;">Choose an example below to start.</span></small></h1>
+    <div id="right_click" class="alert pull-right" style="position:absolute; display:inline-block; margin: 30px 20px 0 0; width:20%; right: 0; font-size: 11px;"><button type="button" class="close" data-dismiss="alert" style="margin-top:-6px;"">&times;</button><i class="icon-info-sign" style="padding-right:6px;"></i>Right click any item for options.</div>
+</div>    
+<div class="row-fluid">
+    <div class="pull-left" style="width:75%; margin:0;">
+    	<div style="overflow:hidden;">
+        	<textarea name="code" id="code_input" style="width:100%; height:330px; font-family:monospace; color: black;" autocomplete="off"></textarea>
+    	</div>
+    	<div id="upload_form" class="pull-right" style="display:none;">
+			<form action="{{ url_for('upload_file') }}" method=post enctype=multipart/form-data>
+    			<b>Upload file: </b>
+				<input type=file name=file>
+				<input type=hidden name=path>
+				<input type=hidden name=collection>
+				<input type=submit value=Upload class="btn btn-primary">
+				<button type="button" class="btn btn-small btn-danger" onclick="document.getElementById('upload_form').style.display = 'none'; ">Cancel Upload</button>
+			</form>
+		</div>
+		<div class="row-fluid input-append" style="padding-bottom:5px;">
+			<button type="button" class="btn pull-left" onclick="document.location.reload(true)">Reset All</button>
+			<button type="button" class="btn btn-success pull-left" onclick="save()">Save File</button>
+		</div>
+		{% for action in g.tools[tool]['actions'] %}
+		<div class="row-fluid input-append" style="margin-top: -10px;">
+			<button type="button" class="btn btn-primary pull-left" onclick="calculate('{{ action['action'] }}', {{ action['stdin'] }})" style="width:15%;">{{ action['action'] }}</button>
+			<a role="button" class="btn btn-success" onclick="help('{{ action['action'].lower() }}-help');" style="width:8%">Help</a>
+			<input type="text" placeholder="Command line arguments" id="{{ action['action'].lower() }}args" style="width:73%;">
+	    </div><br>
+		{% endfor %}
+	</div>
+	<div class="css-treeview pull-right" style="width: 24%; margin:0; height:{{ 405 + g.len(g.tools[tool]['actions'])*35 }}px; overflow-x:auto;" id="file_browser">
+		{% include "file_browser.html" %}
+	</div>
+</div> 
+<div id="loader" style="display:none;">
+	<i style="color:#333333;"><img src="{{ url_for('static', filename='loader.gif') }}" style="padding-right:10px;" />Process running... <button class="btn btn-small btn-danger" type="button" onclick="kill();">Kill</button></i>
+</div>
+<div class="row-fluid">
+	<div id="result" style="visibility:hidden; color:black;"></div>
+	<input type="text" placeholder="Standard input (return to send)" id="stdin" class="input-block-level" style="margin-top:-15px; display:none;" onKeyPress="return update_stdin(event)">
+</div>

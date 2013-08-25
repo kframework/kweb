@@ -1,0 +1,104 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
+{% block content %}
+	<div class="alert alert-info text-center">
+		<b>Tip: </b>To take ownership of any collection you are currently subscribed to, simply edit a file in that collection.
+	</div>
+    <div class="row-fluid" style="padding-left:20px;">
+    	<div class="span4 content-left">
+			<h3 class="row-fluid">My Settings <small>Blank for no change:</small></h3>
+			<form name=settings method=post action="{{ url_for('settings') }}">
+			    {{ render_field(settingsform.email) }}
+			    {{ render_field(settingsform.password) }}
+			    {{ render_field(settingsform.confirm) }}
+			<p><input type=submit value=Submit class="btn btn-primary" >
+			</form>
+		</div>
+		<div class="span8 content-right">
+			<h3>My collections <small>I am currently subscribed to:</small></h3>
+				{% if g.user.collections.count() %}
+				   	<table class="table">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Owner</th>
+								<th>Tool</th>
+								<th>Description</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for collection in g.user.collections %}
+							<tr>
+								<td>{{ collection.name }}</td>
+								<td>{{ collection.owner_email }}</td>
+								<td>{{ collection.tool }}</td>
+								<td>{{ collection.description }}</td>
+								<td><a href="{{ url_for('unsubscribe', id=collection.id) }}" class="btn btn-danger">{{ 'Delete' if g.user.email == collection.owner_email else 'Unsubscribe' }}</a></td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				{% endif %}
+				{% if not g.user.collections.count() %}
+					<br>You are not subscribed to any collections.  <snall>See below for available collections.</small>
+				{% endif %}
+		</div>
+	</div>
+	<hr>
+	<h3>All collections <small>Available for subscription:</small></h3>
+	{% if default_collections.count() %}
+		<h5>Default Collections:</h5>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Tool</th>
+					<th>Description</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for collection in default_collections %}
+					<tr>
+						<td>{{ collection.name }}</td>
+						<td>{{ collection.tool }}</td>
+						<td>{{ collection.description }}</td>
+						{% if g.user.is_subscribed(collection.id) %}
+							<td><a href="{{ url_for('unsubscribe', id=collection.id) }}" class="btn btn-danger pull-right">Unsubscribe</a></td>
+						{% else %}
+							<td><a href="{{ url_for('subscribe', id=collection.id) }}" class="btn btn-success pull-right">Subscribe</a></td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endif %}
+	{% if available_collections.count() %}
+		<h5>Available Collections:</h5>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Tool</th>
+					<th>Description</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for collection in available_collections %}
+					<tr>
+						<td>{{ collection.name }}</td>
+						<td>{{ collection.tool }}</td>
+						<td>{{ collection.description }}</td>
+						{% if g.user.is_subscribed(collection.id) %}
+							<td><a href="{{ url_for('unsubscribe', id=collection.id) }}" class="btn btn-danger pull-right">Unsubscribe</a></td>
+						{% else %}
+							<td><a href="{{ url_for('subscribe', id=collection.id) }}" class="btn btn-success pull-right">Subscribe</a></td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endif %}
+{% endblock %}

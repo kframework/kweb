@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	{% if title %}
+		<title>{{title}} - FSLRun</title>
+	{% else %}
+		<title>FSLRun</title>
+	{% endif %}
+	<script type=text/javascript src="{{url_for('static', filename='jquery.js') }}"></script>
+	<script type=text/javascript src="{{url_for('static', filename='dropdowns.js') }}"></script>
+	<script type=text/javascript src="{{url_for('static', filename='jquery-linenumbers.js') }}"></script>
+	<script type=text/javascript src="{{url_for('static', filename='jquery-scrollto.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+	<script type=text/javascript src="{{ url_for('static', filename='run_code.js') }}"></script>
+	<script type=text/javascript>
+		window.BASE_URL = {{ request.script_root|tojson|safe }};
+	</script>
+	<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" />
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css-tree.css') }}" />
+	<script type=text/javascript>window.tool = '{{ tool }}'; window.hidden = {{ hidden }}; window.open_path = '{{ open_path }}'; window.onload = autoload; window.autoload = '{{ autoload }}'</script>
+	</head>
+	<body style="background:white;">
+		{% include "run_core.html" %}
+  	</body>
+</html'>

@@ -1,0 +1,158 @@
+.my-dropdown {
+	display: block;
+}
+
+.file {
+	padding-left: 24px !important;
+	background: transparent url("/static/file-icons/file.png") no-repeat;
+    background-position: 5px 3px;
+}
+
+.file-k {
+	padding-left: 24px !important;
+	background: transparent url("/static/file-icons/k.png") no-repeat;
+    background-position: 5px 3px;
+}
+
+.file-pdf {
+	padding-left: 24px !important;
+	background: transparent url("/static/file-icons/pdf.png") no-repeat;
+    background-position: 5px 3px;
+}
+
+.kompiled-dir {
+    display: block;
+	disabled:disabled;
+	background: transparent url("/static/file-icons/kompiled.png") no-repeat !important;    
+    background-position: 16px !important;
+}
+
+.file-browser {
+  margin-left:20px !important;
+}
+
+.dropdown-label {
+   display: inline;
+   vertical-align:top;
+}
+
+.css-treeview ul,
+ .css-treeview li
+ {
+ padding: 0;
+ list-style: none;
+ margin-left:0px;
+ }
+
+ .css-treeview input
+ {
+ opacity: 0;
+ display: none;
+ }
+
+ .css-treeview
+ {
+ font: normal 11px "Segoe UI", Arial, Sans-serif;
+ -moz-user-select: none;
+ -webkit-user-select: none;
+ user-select: none;
+}
+
+ .css-treeview a
+ {
+ color: #00f;
+ text-decoration: none;
+ }
+
+ .css-treeview a:hover
+ {
+ text-decoration: underline;
+ }
+
+ .css-treeview input + label + ul
+ {
+ margin: 0 0 0 20px;
+ }
+
+ .css-treeview input ~ ul
+ {
+ display: none;
+ }
+
+ .css-treeview label 
+{
+margin-bottom:0px !important;
+}
+
+ .css-treeview label,
+ .css-treeview label::before
+ {
+ cursor: pointer;
+ }
+
+ .css-treeview input:disabled + label
+ {
+ cursor: default;
+ opacity: .6;
+ }
+
+ .css-treeview input:checked:not(:disabled) ~ ul
+ {
+ display: block;
+ }
+
+ .css-treeview label,
+ .css-treeview label::before
+ {
+ background: url("/static/icons.png") no-repeat;
+ }
+
+ .css-treeview label,
+ .css-treeview a,
+ .css-treeview label::before
+ {
+ display: inline-block;
+ height: 20px;
+ line-height: 20px;,
+ vertical-align: middle;
+ }
+
+ .css-treeview label
+ {
+ background-position: 18px 3px;
+ }
+
+ .css-treeview label::before
+ {
+ content: "";
+ width: 16px;
+ margin: 0 22px 0 0;
+ vertical-align: middle;
+ background-position: 0 -61px;
+ }
+
+ .css-treeview input:checked + label::before
+ {
+ background-position: 0 -32px;
+ }
+
+ /* webkit adjacent element selector bugfix */
+ @media screen and (-webkit-min-device-pixel-ratio:0)
+ {
+ .css-treeview 
+ {
+ -webkit-animation: webkit-adjacent-element-selector-bugfix infinite 1s;
+ }
+ 
+ @-webkit-keyframes webkit-adjacent-element-selector-bugfix 
+ {
+ from 
+ { 
+ padding: 0;
+ } 
+ to 
+ { 
+ padding: 0;
+ }
+ }
+ }
