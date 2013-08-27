@@ -327,7 +327,9 @@ def download_file():
     file_path = get_file_path().split('/')
     file_name = file_path[-1]
     file_directory = '/'.join(file_path[:-1])
-    print file_directory
+    if os.path.isdir(os.path.join(file_directory, file_name)):
+        zip_info = get_directory_zip(os.path.join(file_directory, file_name))
+        return send_from_directory(zip_info[0], zip_info[1], as_attachment=True, attachment_filename = file_name + '.zip')
     return send_from_directory(file_directory, file_name, as_attachment=True)
 
 # Internal Page (file deletion worker)
