@@ -22,7 +22,7 @@ function calculate(action, stdin) {
         window.uuid = data.result;
         update_result();
     });
-    return false;
+  return false;
 }
 
 function help(action) {
@@ -34,7 +34,7 @@ function help(action) {
         window.uuid = data.result;
         update_result();
     });
-    return false;
+  return false;
 }
 
 function update_result() {
@@ -81,7 +81,7 @@ function save() {
       update_file_browser();
     }
     );
-    return false;
+  return false;
 }
 
 function download_file(file, path, collection_id) {
