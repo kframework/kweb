@@ -3,7 +3,7 @@
 from models import User, Collection, AnonymousCollection
 from flask import g, session, request
 from config import BASE_DIR
-import uuid
+import os, uuid, zipfile
 
 def get_user_collections(email):
     if email is None:
@@ -74,3 +74,22 @@ def get_file_path():
     if '..' in file_path or '~' in file_path:
         return ''
     return file_path
+
+# http://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory-in-python
+# @todo make this async
+def get_directory_zip(path_to_directory):
+    new_uuid = uuid.uuid4()
+    zip_path = os.path.join(BASE_DIR, 'results')
+    zip_name = str(new_uuid) + '.zip'
+    zip = zipfile.ZipFile(os.path.join(zip_path, zip_name), 'w')
+    for root, dirs, files in os.walk(path_to_directory):
+        for file in files:
+            path = root.replace(BASE_DIR, '', 1).split('/')
+            # Remove user's base directory from relative zip paths
+            if path[0] == 'anon':
+                path = '/'.join(path[2:])
+            else:
+                path = '/'.join(path[1:])
+            zip.write(os.path.join(root, file), arcname=os.path.join(path, file))
+    zip.close()
+    return (zip_path, zip_name)
