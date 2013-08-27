@@ -84,13 +84,17 @@ function save() {
     return false;
 }
 
+function download_file(file, path, collection_id) {
+  var file_url = window.BASE_URL + "/_download_file?file=" + urlencode(file) + "&collection_id=" + urlencode(collection_id) + "&path=" + urlencode(path);
+  window.location.assign(file_url);
+  return false;
+}
+
 // Both arguments are str
 function load_file(file, path, collection_id) {
   $.support.cors = true;
   if (get_file_extension(file) === "pdf") {
-    var file_url = window.BASE_URL + "/_download_file?file=" + urlencode(file) + "&collection_id=" + urlencode(collection_id) + "&path=" + urlencode(path);
-    window.location.assign(file_url);
-    return false;
+    return download_file(file, path, collection_id);
   }
   $("#code_input").val("Loading...");
   $.getJSON(window.BASE_URL + '/_load_file', {file: file, path: path, collection_id: collection_id}, 
@@ -112,7 +116,7 @@ function load_file(file, path, collection_id) {
       }
     }
     );
-    return false;
+  return false;
 }
 
 function upload_file(file, path, collection_id) {
@@ -146,7 +150,7 @@ function delete_file(file, path, collection_id) {
       }
       );
     }
-    return false;
+  return false;
 }
 
 function create(file, path, collection_id, directory_or_file) {
@@ -175,7 +179,7 @@ function delete_directory(file, path, collection_id) {
       }
       );
     }
-    return false;
+  return false;
 }
 
 function toggle_metadata() {
