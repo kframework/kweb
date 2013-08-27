@@ -233,7 +233,7 @@ function update_stdin(e)
 
 function autoload() {
   $("#code_input").linenumbers({col_width: '50px', col_height: '330px'});
-  $('body').click(function() { clear_menus() });
+  $('body').click(function() { clear_dropdowns() });
   $.support.cors = true;
   if (window.autoload.length) {
     document.getElementById(window.autoload).click();
