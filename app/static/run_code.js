@@ -290,6 +290,7 @@ function show_touch_controls() {
   document.getElementById("right_click").style.display = "none";
 }
 
+// Stackoverflow (Source unknown)
 function is_touch_device() {
   return  (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
 }
