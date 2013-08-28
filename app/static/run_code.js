@@ -2,9 +2,21 @@ jQuery.ajaxSetup({ cache : false });
 window.file = '';
 window.path = '';
 window.collection_id = 0;
-window.uuid = ''
+window.uuid = '';
+window.last_code_keystroke = 0;
+window.last_save = 0;
 
 function calculate(action, stdin) {
+  if (window.last_code_keystroke > window.last_save) {
+    if (!$("#save_info").text().length) {
+      // No save in progress.  Start one and ensure no future saves run on this file.
+      window.last_code_keystroke = (new Date()).getTime();
+      save();
+    }
+    // Wait for save to complete
+    setTimeout(function() { calculate(action, stdin); }, 500);
+    return;
+  }
   $("#result").html("<pre>\n\n</pre>");
   if (window.file.length === 0 && window.path.length === 0) {
     alert('No file selected, please select a file');
@@ -68,16 +80,16 @@ function kill() {
     document.getElementById("stdin").style.display = 'none';
     document.getElementById("result").style.visibility = 'hidden';
     document.getElementById("meta").style.display = 'none';
-    window.uuid = ''
+    window.uuid = '';
   }
 }
 
 function save() {
-  document.getElementById("result").style.visibility="visible";
-  $("#result").html("<pre>Please wait, saving...</pre>");
+  $("#save_info").text('Save in progress...');
   $.getJSON(window.BASE_URL + '/_save_file', {code: $('textarea[name="code"]').val(), file: window.file, path: window.path, collection_id: window.collection_id}, 
     function(data) {
-      $("#result").html("<pre>" + data.result + "</pre>");
+      $("#save_info").text('Saved.');
+      window.last_save = (new Date()).getTime();
       update_file_browser();
     }
     );
@@ -235,9 +247,28 @@ function update_stdin(e)
    }
 }
 
+function update_code()
+{
+  $("#save_info").text("");
+  window.last_code_keystroke = (new Date()).getTime();
+  window.setTimeout(save_if_idle, 2000);
+}
+
+function save_if_idle()
+{
+  if (!window.collection_id) {
+    // No file open
+    return;
+  }
+  if ((new Date()).getTime() - window.last_code_keystroke > 1900) {
+    save();
+  }
+}
+
 function autoload() {
   $("#code_input").linenumbers({col_width: '50px', col_height: '330px'});
-  $('body').click(function() { clear_dropdowns() });
+  $("body").click(function() { clear_dropdowns(); });
+  $("#code_input").bind("input propertychange", update_code);
   $.support.cors = true;
   if (window.autoload.length) {
     document.getElementById(window.autoload).click();

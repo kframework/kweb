@@ -5,7 +5,7 @@
 {% endif %}
 <div class="row-fluid">
     <h1 style="white-space:nowrap; overflow:hidden; display:inline;" class="pull-left">{{title}} <small><span id="path" style="white-space:nowrap;">Choose an example below to start.</span></small></h1>
-    <div id="right_click" class="alert pull-right" style="position:absolute; display:inline-block; margin: 30px 20px 0 0; width:20%; right: 0; font-size: 11px;"><button type="button" class="close" data-dismiss="alert" style="margin-top:-6px;"">&times;</button><i class="icon-info-sign" style="padding-right:6px;"></i>Right click any item for options.</div>
+    <div id="right_click" class="alert pull-right" style="position:absolute; display:inline-block; margin: 30px 20px 0 0; width:20%; right: 0; font-size: 11px;"><button type="button" class="close" data-dismiss="alert" style="margin-top:-6px;">&times;</button><i class="icon-info-sign" style="padding-right:6px;"></i>Right click any item for options.</div>
 </div>    
 <div class="row-fluid">
     <div class="pull-left" style="width:75%; margin:0;">
@@ -22,12 +22,11 @@
 				<button type="button" class="btn btn-small btn-danger" onclick="document.getElementById('upload_form').style.display = 'none'; ">Cancel Upload</button>
 			</form>
 		</div>
-		<div class="row-fluid input-append" style="padding-bottom:5px;">
-			<button type="button" class="btn pull-left" onclick="document.location.reload(true)">Reset All</button>
-			<button type="button" class="btn btn-success pull-left" onclick="save()">Save File</button>
+		<div class="row-fluid" style="padding-bottom:10px;">
+			<i style="margin-left:-50px; color: grey;" id="save_info"></i>
 		</div>
 		{% for action in g.tools[tool]['actions'] %}
-		<div class="row-fluid input-append" style="margin-top: -10px;">
+		<div class="row-fluid input-append">
 			<button type="button" class="btn btn-primary pull-left" onclick="calculate('{{ action['action'] }}', {{ action['stdin'] }})" style="width:15%;">{{ action['action'] }}</button>
 			<a role="button" class="btn btn-success" onclick="help('{{ action['action'].lower() }}-help');" style="width:8%">Help</a>
 			<input type="text" placeholder="Command line arguments" id="{{ action['action'].lower() }}args" style="width:73%;">
