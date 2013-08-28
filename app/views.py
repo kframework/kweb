@@ -212,14 +212,14 @@ def restore_file():
         return jsonify(success=False)
 
 # Internal Page (file save worker)
-@app.route('/_save_file')
+@app.route('/_save_file', methods=['POST'])
 def save_file():
-    code = request.args.get('code', None, type = str)
-    path = request.args.get('path', None, type = str)
-    file = request.args.get('file', None, type = str)
+    code = request.form.get('code', None, type = str)
+    path = request.form.get('path', None, type = str)
+    file = request.form.get('file', None, type = str)
     if '..' in path or '..' in file or '~' in file or '~' in path:
         return redirect('..')
-    collection_id = request.args.get('collection_id', None, type=int)
+    collection_id = request.form.get('collection_id', None, type=int)
     collection = get_collection(collection_id)
     reload = ''
     if not g.user.is_anonymous() and collection.owner_email != g.user.email:

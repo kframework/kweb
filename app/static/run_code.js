@@ -7,7 +7,7 @@ window.last_code_keystroke = 0;
 window.last_save = 0;
 
 function calculate(action, stdin) {
-  if (window.last_code_keystroke > window.last_save) {
+  if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
     if (!$("#save_info").text().length) {
       // No save in progress.  Start one and ensure no future saves run on this file.
       window.last_code_keystroke = (new Date()).getTime();
@@ -86,13 +86,15 @@ function kill() {
 
 function save() {
   $("#save_info").text('Save in progress...');
-  $.getJSON(window.BASE_URL + '/_save_file', {code: $('textarea[name="code"]').val(), file: window.file, path: window.path, collection_id: window.collection_id}, 
-    function(data) {
+  $.ajax({
+       type: "POST",
+       url: window.BASE_URL + '/_save_file',
+       data: {code: $('textarea[name="code"]').val(), file: window.file, path: window.path, collection_id: window.collection_id},
+  }).done(function () {
       $("#save_info").text('Saved.');
       window.last_save = (new Date()).getTime();
-      update_file_browser();
-    }
-    );
+      update_file_browser();    
+  });
   return false;
 }
 
@@ -104,7 +106,7 @@ function download_file(file, path, collection_id) {
 
 // Both arguments are str
 function load_file(file, path, collection_id) {
-  if (window.last_code_keystroke > window.last_save) {
+  if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
     save();
   }
   $.support.cors = true;
