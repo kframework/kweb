@@ -104,6 +104,9 @@ function download_file(file, path, collection_id) {
 
 // Both arguments are str
 function load_file(file, path, collection_id) {
+  if (window.last_code_keystroke > window.last_save) {
+    save();
+  }
   $.support.cors = true;
   if (get_file_extension(file) === "pdf") {
     return download_file(file, path, collection_id);
