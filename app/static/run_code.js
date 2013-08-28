@@ -249,6 +249,10 @@ function update_stdin(e)
 
 function update_code()
 {
+  if (!window.collection_id) {
+    // No file open
+    return;
+  }
   $("#save_info").text("");
   window.last_code_keystroke = (new Date()).getTime();
   window.setTimeout(save_if_idle, 2000);
@@ -256,10 +260,6 @@ function update_code()
 
 function save_if_idle()
 {
-  if (!window.collection_id) {
-    // No file open
-    return;
-  }
   if ((new Date()).getTime() - window.last_code_keystroke > 1900) {
     save();
   }
