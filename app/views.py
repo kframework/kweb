@@ -86,19 +86,8 @@ def manage_users():
 def manage_collections():
     if not g.user.role:
         return redirect('..')
-    newform = NewCollectionForm(request.form, prefix='new')
     editform = EditCollectionForm(request.form, prefix='edit')
     if request.method == 'POST':
-        if newform.name.data and newform.validate():
-            user = User.query.filter_by(email = newform.owner.data).first()
-            if user is not None:
-                collection = Collection(tool = newform.tool.data, name = newform.name.data, owner_email=newform.owner.data, description=newform.description.data)
-                user.collections.append(collection)
-                db.session.add(collection)
-                db.session.commit()
-                flash('Collection ' + newform.name.data + ' added.', category='success')
-            else:
-                flash('Error: No such user', category='error')
         if editform.id.data and editform.validate():
             collection = Collection.query.filter_by(id=int(editform.id.data)).first()
             if collection is not None:

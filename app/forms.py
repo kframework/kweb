@@ -24,12 +24,6 @@ class EditCollectionForm(Form):
     tool = TextField('Change tool', [validators.Length(max=35)])
     description = TextField('Change description', [validators.length(max=160)])
 
-class NewCollectionForm(Form):
-    name = TextField('Collection name', [validators.Length(max=100), validators.Required()])
-    owner = TextField('Owner email', [validators.Length(min=6, max=35), validators.Required()], default='default')
-    tool = TextField('Tool', [validators.Length(max=35), validators.Required()], default=DEFAULT_TOOL)
-    description = TextField('Description', [validators.Length(min=20, max=160), validators.Required()])
-
 class SettingsForm(Form):
     email = TextField('Change login email', [validators.Length(min=6, max=35)])
     password = PasswordField('Change password', [validators.EqualTo('confirm', message='Passwords must match')])
