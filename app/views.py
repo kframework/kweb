@@ -4,6 +4,7 @@ from forms import *
 from commands import Command
 from models import *
 from config import *
+from mails import *
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from collection_tools import *
 import hashlib, uuid, time, shutil, os
@@ -46,8 +47,8 @@ def forgot():
         if forgotform.validate():
             # Success, e-mail a new password
             return do_forgot(forgotform)
-        return render_template('forgot.html', forgotform = forgotform, title='Forgot Password', failed=True, sent=False)
-    return render_template('forgot.html', forgotform = forgotform, title='Forgot Password', failed=False, sent=False)
+        return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=True, sent=False)
+    return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=False, sent=False)
 
 # Tool Execution Page
 # Allow for tool change via /run/[toolname]
@@ -71,6 +72,21 @@ def embed_run(tool):
 def logout():
     logout_user()
     return redirect(request.referrer)
+
+@app.route('/reset_password/<string:password_hash>/<string:email>', methods=['GET', 'POST'])
+def reset(password_hash, email):
+    resetform = ResetForm(request.form)
+    if request.method == 'POST':
+        user = User.query.filter_by(email = email).first()
+        if user is None:
+            return 'Error: no user found.'
+        if user.password != password_hash:
+            return 'Error: incorrect hash'
+        user.set_password(resetform.password.data)
+        flash('Your password has been reset successfully!', category = 'success')
+        login_user(user)
+        return redirect(url_for('hello_world'))
+    return render_template('password_reset.html', password_hash = password_hash, email = email, resetform = resetform)
 
 # Admin page - manage users
 @app.route('/manage_users')
@@ -423,12 +439,12 @@ def do_forgot(forgotform):
     user = User.query.filter_by(email = forgotform.email.data).first()
     if user:
         try:
-            # @todo Generate a new password for the user
-            # E-mail generated password to user
-            return render_template('forgot.html', forgotform = forgotform, title='Forgot Password', failed=False, sent=True)
+            # E-mail password recovery hash to user
+            send_forgot_mail(user.password, user.email)
+            return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=False, sent=True)
         except:
             pass
-    return render_template('forgot.html', forgotform = forgotform, title='Forgot Password', failed=True, sent=False)
+    return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=True, sent=False)
 
 # Convert the directory represented by the arguments
 # path and collection to a nested array with file data

@@ -18,6 +18,10 @@ class LoginForm(Form):
 class ForgotForm(Form):
     email = TextField('Email Address', [validators.Length(min=6, max=35)])
 
+class ResetForm(Form):
+    password = PasswordField('New password', [validators.EqualTo('confirm', message='Passwords must match')])
+    confirm = PasswordField('Repeat Password')
+
 class EditCollectionForm(Form):
     id = TextField('Collection ID to edit', [validators.Required()])
     name = TextField('Change collection name', [validators.Length(max=100)])

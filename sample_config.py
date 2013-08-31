@@ -8,6 +8,7 @@ SECRET_KEY = 'kisthebest'
 SALT = 'kisthebest'
 
 # Application-specific settings
+MAIL_SENDER = 'no-reply@my.domain'
 DEFAULT_TOOL = 'k'
 # Include trailing paths
 BASE_DIR = '/home/kuser/kfiles/'
