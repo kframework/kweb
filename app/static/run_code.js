@@ -272,7 +272,9 @@ function save_if_idle()
 
 function autoload() {
   $("#code_input").linenumbers({col_width: '50px', col_height: '330px'});
-  $("body").click(function() { clear_dropdowns(); });
+  if (!is_touch_device()) {
+    $("body").click(function() { clear_dropdowns(); });
+  }
   $("#code_input").bind("input propertychange", update_code);
   $.support.cors = true;
   if (window.autoload.length) {
