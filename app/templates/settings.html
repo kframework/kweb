@@ -16,6 +16,13 @@
 		</div>
 		<div class="span8 content-right">
 			<h3>My collections <small>I am currently subscribed to:</small></h3>
+				<div class="input-append">
+					<form action="{{ url_for('create_collection') }}" method="POST">
+						<input type="text" class="span4" name="name" placeholder="Collection name"></input>
+						<input type="text" class="span7" name="description" placeholder="Collection description"></input>
+						<input type=submit value="Create Collection" class="btn btn-success"></input>
+					</form>
+				</div>
 				{% if g.user.collections.count() %}
 				   	<table class="table">
 						<thead>

@@ -374,6 +374,26 @@ def create_directory():
         return jsonify(result=None)
     return ''
 
+# Internal Page (collection creation worker)
+@login_required
+@app.route('/_create_collection', methods=['POST'])
+def create_collection():
+    tool = request.form.get('tool', DEFAULT_TOOL, type=str)
+    name = request.form.get('name', None, type=str)
+    description = request.form.get('description', '', type=str)
+    collection = Collection.query.filter_by(name = name, owner_email = g.user.email).first()
+    if collection is not None:
+        flash('A collection by that name already belongs to you!', category = 'error')
+    else:
+        collection = Collection(tool = tool, name = name, owner_email=g.user.email, description=description)
+        if not os.path.isdir(collection.get_collection_path()):
+            os.makedirs(collection.get_collection_path())
+        g.user.collections.append(collection)
+        db.session.add(collection)
+        db.session.commit()
+        flash('Successfully added collection ' + name + '.', category = 'success')
+    return redirect(request.referrer)
+
 # Internal Page (Flask upload handler)
 @app.route('/_upload_file', methods=['POST'])
 def upload_file():
