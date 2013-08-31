@@ -2,20 +2,10 @@
 {% extends "base.html" %}
 {% block content %}
 	<div class="alert alert-info text-center">
-		All collections must have an owner.  If the owner is default, the collection will be added to all new user accounts as they are made.  If the owner is available, the collection will be available for any user to subscribe to.
+		To create a collection, simply log into the desired owner using "Manage Users" and create the collection on their "Settings" page.  Use owners default or available to make the collections either visible to or subscribable to all users, respectively.
 	</div>
 	<div class="row-fluid" style="padding-bottom:20px;">
-		<div class="span5 offset1 content-left">
-			<h3>New collection:</h3>
-			<form name=login method=post action="{{ url_for('manage_collections') }}">
-			    {{ render_field(newform.name) }}
-			    {{ render_field(newform.owner) }}
-			    {{ render_field(newform.tool) }}
-			    {{ render_field(newform.description) }}
-			<p><input type=submit value=Add class="btn btn-success" >
-			</form>
-		</div>
-		<div class="span5 offset1">
+		<div class="span5">
 			<h3>Edit collection: <small>(blank for no change)</small></h3>
 			<form name=login method=post action="{{ url_for('manage_collections') }}">
 			    {{ render_field(editform.id) }}

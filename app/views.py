@@ -102,7 +102,7 @@ def manage_collections():
                 flash('Collection updated successfully', category='success')
             else:
                 flash('Error: Invalid collection ID', category='error')
-    return render_template('manage_collections.html', title = 'Manage Collections', newform = newform, editform=editform, all_collections = get_user_collections(None))
+    return render_template('manage_collections.html', title = 'Manage Collections', editform=editform, all_collections = get_user_collections(None))
 
 # User settings page - manage user collections
 @app.route('/settings', methods = ['GET', 'POST'])
