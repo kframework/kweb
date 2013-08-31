@@ -438,12 +438,9 @@ def do_login(loginform, registerform):
 def do_forgot(forgotform):
     user = User.query.filter_by(email = forgotform.email.data).first()
     if user:
-        try:
-            # E-mail password recovery hash to user
-            send_forgot_mail(user.password, user.email)
-            return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=False, sent=True)
-        except:
-            pass
+        # E-mail password recovery hash to user
+        send_forgot_mail(user.password, user.email)
+        return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=False, sent=True)
     return render_template('password_forgot.html', forgotform = forgotform, title='Forgot Password', failed=True, sent=False)
 
 # Convert the directory represented by the arguments
