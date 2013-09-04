@@ -5,6 +5,7 @@ window.collection_id = 0;
 window.uuid = '';
 window.last_code_keystroke = 0;
 window.last_save = 0;
+window.last_file_clicked = {}
 
 function calculate(action, stdin) {
   if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
@@ -104,6 +105,52 @@ function download_file(file, path, collection_id) {
   return false;
 }
 
+function autofill_file_arg(file, path, collection_id) {
+  var file_info = [file, path, collection_id];
+  if (window.tool === "k") {
+    if (get_file_extension(file) === "k") {
+      last_file_clicked["kompile"] = file_info;
+    }
+    else {
+      last_file_clicked["krun"] = file_info;
+    }
+    if (last_file_clicked["krun"] && !$("#krunargs").hasClass("modified-input")) {
+      $("#krunargs").val(get_relative_path(last_file_clicked["krun"]));
+    }
+    if (last_file_clicked["kompile"] && !$("#kompileargs").hasClass("modified-input")) {
+      $("#kompileargs").val(get_relative_path(last_file_clicked["kompile"]));
+    }
+  }
+}
+
+function get_relative_path(file_info) {
+  if (file_info[2] != window.collection_id) {
+    // User has changed collections, currently stored info is garbage
+    return '';
+  }
+  if (file_info[1] === window.path) {
+    // We have not changed paths, the relative path is the file name
+    return file_info[0];
+  }
+  // Collapse path by removing all elements that are common to the current file
+  // Eg - collapse lesson2/example1/test.k to example1/test.k if we are in the lesson2 directory
+  var global_path = window.path.split("/");
+  var file_path = file_info[1].split("/");
+  // unique_path_start: the first element of file_path not in the window's (currently selected) path
+  var unique_path_start = 0;
+  for (var i = 0; i < file_path.length; i++) {
+    if (i < global_path.length && file_path[i] === global_path[i]) {
+      unique_path_start++;
+    }
+    else {
+      break;
+    }
+  }
+  file_path.splice(0, unique_path_start);
+  // Add the appropriate level of "../"'s to arrive either to or one folder up from the selected folder
+  return "../".repeat(global_path.length - unique_path_start - 1) + (file_path).join("/") + file_info[0];
+}
+
 // Both arguments are str
 function load_file(file, path, collection_id) {
   if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
@@ -122,6 +169,7 @@ function load_file(file, path, collection_id) {
       window.file = file;
       window.path = path;
       window.collection_id = collection_id;
+      autofill_file_arg(file, path, collection_id);
       if (data.meta.length !== 0) {
         document.getElementById("meta").style.display="block";
         if (data.meta !== $("#metadata").html()) {
@@ -252,6 +300,14 @@ function update_stdin(e)
    }
 }
 
+function update_args(elem)
+{
+  $(elem).attr('class', 'modified-input');
+  if (!$(elem).val().length) { 
+    $(elem).removeClass('modified-input')
+  }
+}
+
 function update_code()
 {
   if (!window.collection_id) {
@@ -332,7 +388,7 @@ function show_touch_controls() {
 
 // Stackoverflow (Source unknown)
 function is_touch_device() {
-  return  (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
+  return (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 }
 
 function show_controls_if_touch_device() {
@@ -340,3 +396,8 @@ function show_controls_if_touch_device() {
     show_touch_controls();
   }
 }
+
+http://stackoverflow.com/questions/4549894/how-can-i-repeat-strings-in-javascript
+String.prototype.repeat = function(times) {
+   return (new Array(times + 1)).join(this);
+};
