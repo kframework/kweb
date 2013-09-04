@@ -121,7 +121,7 @@ function autofill_file_arg(file, path, collection_id) {
       var kompile_path = get_relative_path(last_file_clicked["kompile"]);
       var kompile_dir = kompile_path.split('/')
       kompile_dir.splice(kompile_dir.length - 1, 1);
-      $("#kompileargs").val(kompile_path + (kompile_dir.length ? (" -o " + kompile_dir.join("/") + "/") : ""));
+      $("#kompileargs").val(kompile_path + (kompile_dir.length ? (" -o " + kompile_path.replace(".k", "-kompiled") + "/") : ""));
     }
   }
 }
