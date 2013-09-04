@@ -36,7 +36,7 @@ class Command(object):
                 if has_file_arg:
                     add_string = ''
                 if self.action.lower() == 'kompile':
-                    if not '.k' in self.current_file:
+                    if not '.k' in self.current_file and not len(self.args):
                         self.output_file.write('Invalid file type!  File must end in .k to be kompiled!\n')
                     else:
                         self.output_file.write('Running command: kompile ' + ' '.join(self.args.split()) + add_string + '\n')
