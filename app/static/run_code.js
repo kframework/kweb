@@ -119,9 +119,7 @@ function autofill_file_arg(file, path, collection_id) {
     }
     if (last_file_clicked["kompile"] && !$("#kompileargs").hasClass("modified-input")) {
       var kompile_path = get_relative_path(last_file_clicked["kompile"]);
-      var kompile_dir = kompile_path.split('/')
-      kompile_dir.splice(kompile_dir.length - 1, 1);
-      $("#kompileargs").val(kompile_path + (kompile_dir.length ? (" -o " + kompile_path.replace(".k", "-kompiled") + "/") : ""));
+      $("#kompileargs").val(kompile_path + ((kompile_path.indexOf("/") != -1) ? (" -o " + kompile_path.replace(".k", "-kompiled") + "/") : ""));
     }
   }
 }
