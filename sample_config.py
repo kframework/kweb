@@ -28,6 +28,8 @@ TOOLS = {
 
 # ---------------------------------------------------------------------
 # DO NOT CHANGE BELOW THIS LINE UNLESS YOU ARE SURE, ESP. IN PRODUCTION. 
+# Session lifetime in days
+SESSION_LIFETIME = 5
 
 # Paths to database and migration directory
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(APP_DIR, 'app.db')

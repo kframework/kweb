@@ -488,6 +488,7 @@ def parse_code(code, tool, action, path, current_file, args):
 # Set up globals in each request context
 @app.before_request
 def before_request():
+    session.permanent = True
     g.user = current_user
     g.tools = TOOLS
     g.get_file_tree = get_file_tree
