@@ -8,6 +8,7 @@ SECRET_KEY = 'kisthebest'
 SALT = 'kisthebest'
 
 # Application-specific settings
+BASE_HTTP_URL = 'http://localhost:8080/'
 MAIL_SENDER = 'no-reply@my.domain'
 DEFAULT_TOOL = 'k'
 # Include trailing paths
