@@ -15,9 +15,15 @@
         <div class="hero-unit span6 pull-right">
             <h1>Learn</h1>
             <p>Sign up for your own kweb account to access additional collections and save your work in the cloud and work from anywhere!  We're building fast, so check soon for more account features.</p>
+            {% if g.user and g.user.email %}
+            <a href="{{url_for('settings')}}" class="btn btn-primary btn-large">
+                View My Settings
+            </a>
+            {% else %}
             <a href="{{url_for('login')}}" class="btn btn-primary btn-large">
                 Sign Up
             </a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
