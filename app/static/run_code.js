@@ -281,9 +281,7 @@ function update_file_browser() {
             curr_elem.click();
         }
       }
-      if ($("#file_browser").scrollTop() === 0) {
-        $("#file_browser").scrollTop(scroll_top);
-      }
+      $("#file_browser").scrollTop(scroll_top);
     });
 }
 
