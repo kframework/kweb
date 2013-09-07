@@ -16,7 +16,7 @@ $ source flask/bin/activate
 
 $ pip install flask==0.9 flask-login sqlalchemy==0.7.9 flask-sqlalchemy==0.16 sqlalchemy-migrate flask-wtf ansi2html
 
-$ cp sample_conig.py config.py
+$ cp sample_config.py config.py
 
 $ cd [directory for file storage]
 
