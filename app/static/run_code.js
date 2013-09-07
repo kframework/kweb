@@ -6,6 +6,7 @@ window.uuid = '';
 window.last_code_keystroke = 0;
 window.last_save = 0;
 window.last_file_clicked = {}
+window.stdin = false;
 
 function calculate(action, stdin) {
   if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
@@ -23,6 +24,7 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
+  window.stdin = stdin;
   $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
@@ -57,7 +59,8 @@ function update_result() {
         {
           if ($("#result").html() !== data.result) {
             $("#result").html(data.result);
-            $.scrollTo(document.getElementById("stdin"));
+            if (window.stdin)
+              $.scrollTo(document.getElementById("stdin"));
           }
           if (data.done) {
             document.getElementById("loader").style.display = 'none';
