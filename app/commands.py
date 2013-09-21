@@ -1,4 +1,4 @@
-import subprocess, threading, os, time
+import subprocess, threading, os, time, shlex
 from config import BASE_DIR
 
 # Base unit of tool execution is a command.
@@ -39,9 +39,9 @@ class Command(object):
                     if not '.k' in self.current_file and not len(self.args):
                         self.output_file.write('Invalid file type!  File must end in .k to be kompiled!\n')
                     else:
-                        self.output_file.write('Running command: kompile ' + ' '.join(self.args.split()) + add_string + '\n')
+                        self.output_file.write('Running command: kompile ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
                         self.output_file.flush()
-                        self.process = subprocess.Popen(['/k/bin/kompile'] + self.args.split() + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
+                        self.process = subprocess.Popen(['/k/bin/kompile'] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
                         open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
                         self.process.wait()
                         empty = (len(open(base_file_path).read().strip().splitlines()) == 1)
@@ -50,9 +50,9 @@ class Command(object):
                             self.output_file.write(' (no output indicates a successful kompile)')
                         self.output_file.write('.\n')
                 elif self.action.lower() == 'krun':
-                    self.output_file.write('Running command: krun ' + ' '.join(self.args.split()) + add_string + '\n')
+                    self.output_file.write('Running command: krun ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
                     self.output_file.flush()
-                    self.process = subprocess.Popen(['/k/bin/krun'] + self.args.split() + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
+                    self.process = subprocess.Popen(['/k/bin/krun'] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
                     open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
                     self.process.wait()
                     self.output_file.write('----- End of process output.\n')
