@@ -23,7 +23,7 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
-  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val()}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';
@@ -31,6 +31,7 @@ function calculate(action, stdin) {
           document.getElementById("stdin").style.display = 'block';
           $("#stdin").focus();
           $("#stdin").val("");
+          $("#stdin").attr("placeholder", "Interactive Standard input (return to send)");
         }
         window.uuid = data.result;
         update_result();
@@ -57,13 +58,13 @@ function update_result() {
         {
           if ($("#result").html() !== data.result) {
             $("#result").html(data.result);
-            if (document.getElementById("stdin").style.display !== 'none')
-              $.scrollTo(document.getElementById("stdin"));
+            $.scrollTo(document.getElementById("stdin"));
           }
           if (data.done) {
             document.getElementById("loader").style.display = 'none';
-            document.getElementById("stdin").style.display = 'none';
-            update_file_browser();            
+            update_file_browser();   
+            $("#stdin").attr("placeholder", "Initial Standard Input Buffer");  
+            $("#stdin").blur();
           }
           else {
            window.setTimeout(update_result, 1500);

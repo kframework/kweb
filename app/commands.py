@@ -4,7 +4,7 @@ from config import BASE_DIR
 # Base unit of tool execution is a command.
 class Command(object):
     # Initialize command
-    def __init__(self, cmd, tool, action, path, current_file, uuid, args):
+    def __init__(self, cmd, tool, action, path, current_file, uuid, args, stdin):
         self.uuid = uuid
         self.cmd = cmd
         self.process = None
@@ -15,6 +15,7 @@ class Command(object):
         self.output_file = ''
         self.run_time = time.time()
         self.args = args.strip()
+        self.initial_stdin = stdin
         self.done = False
 
     # Begin command in another thread.
@@ -53,6 +54,7 @@ class Command(object):
                     self.output_file.write('Running command: krun ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
                     self.output_file.flush()
                     self.process = subprocess.Popen(['/k/bin/krun'] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
+                    self.process.stdin.write(self.initial_stdin + '\n')
                     open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
                     self.process.wait()
                     self.output_file.write('----- End of process output.\n')

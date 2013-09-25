@@ -147,6 +147,7 @@ def run_code():
     current_file = request.args.get('file', None, type = str)
     collection_id = request.args.get('collection_id', None, type = int)
     args = request.args.get('args', '', type = str)
+    stdin = request.args.get('stdin', None, type = str)
     collection = get_collection(collection_id)
     if collection:
         current_path = collection.get_collection_path() + path
@@ -155,7 +156,7 @@ def run_code():
         current_file = None
         args = ''
         code = None
-    return jsonify(result = parse_code(code, 'k', action, current_path, current_file, args))
+    return jsonify(result = parse_code(code, 'k', action, current_path, current_file, args, stdin))
 
 # Internal Page (result div update worker)
 @app.route('/_update_result/<string:curr_id>')
@@ -179,7 +180,7 @@ def update_stdin(curr_id):
     try:
         base_path = BASE_DIR + 'results/' + curr_id
         if (os.path.exists(base_path + '.done')):
-            return jsonify(success=False, error='No process currently running.')
+            return jsonify(success=False, error='No process currently running.  Start a process to consume the buffer.')
         fd = int(open(base_path + '.in').read())
         print 'FD: ' + str(fd)
         os.write(fd, stdin + '\n')
@@ -479,9 +480,9 @@ def get_file_tree(path, collection, open_path):
         return files
 
 # Process the user input
-def parse_code(code, tool, action, path, current_file, args):
+def parse_code(code, tool, action, path, current_file, args, stdin):
     curr_id = str(uuid.uuid4())
-    command = Command(code, tool, action, path, current_file, curr_id, args)
+    command = Command(code, tool, action, path, current_file, curr_id, args, stdin)
     command.run()
     return curr_id
 
