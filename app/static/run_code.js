@@ -117,7 +117,7 @@ function autofill_file_arg(file, path, collection_id) {
       last_file_clicked["krun"] = file_info;
     }
     if (last_file_clicked["krun"]) {
-      $("#krunargs").val(get_relative_path(last_file_clicked["krun"]) + (last_file_clicked["kompile"] ? (" -k-definition " + get_relative_path(last_file_clicked["kompile"])) : ""));
+      $("#krunargs").val(get_relative_path(last_file_clicked["krun"]) + (last_file_clicked["kompile"] ? (" -d " + get_relative_path(last_file_clicked["kompile"])) : ""));
     }
     if (last_file_clicked["kompile"]) {
       var kompile_path = get_relative_path(last_file_clicked["kompile"]);
