@@ -23,15 +23,16 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
-  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin").val()}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';
+        $("#stdin-initial").val("");
+        document.getElementById("stdin-inital").style.display = 'none';
         if (stdin) {
           document.getElementById("stdin").style.display = 'block';
           $("#stdin").focus();
           $("#stdin").val("");
-          $("#stdin").attr("placeholder", "Interactive Standard input (return to send)");
         }
         window.uuid = data.result;
         update_result();
@@ -61,10 +62,10 @@ function update_result() {
             $.scrollTo(document.getElementById("stdin"));
           }
           if (data.done) {
-            document.getElementById("loader").style.display = 'none';
             update_file_browser();   
-            $("#stdin").attr("placeholder", "Initial Standard Input Buffer");  
-            $("#stdin").blur();
+            document.getElementById("loader").style.display = 'none';
+            document.getElementById("stdin-inital").style.display = 'none';
+            document.getElementById("stdin-inital").style.display = 'none';
           }
           else {
            window.setTimeout(update_result, 1500);

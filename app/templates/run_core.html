@@ -37,11 +37,12 @@
 		{% include "file_browser.html" %}
 	</div>
 </div> 
+<input type="text" placeholder="Initial Standard Input Buffer" id="stdin-initial" class="input-block-level">
 <div id="loader" style="display:none;">
 	<i style="color:#333333;"><img src="{{ url_for('static', filename='loader.gif') }}" style="padding-right:10px;" />Process running... <button class="btn btn-small btn-danger" type="button" onclick="kill();">Kill</button></i>
 </div>
 <div class="row-fluid">
 	<div id="result" style="color:black;"><div style="height:15px;"></div></div>
-	<input type="text" placeholder="Initial Standard Input Buffer" id="stdin" class="input-block-level" style="margin-top:-15px;" onKeyPress="return update_stdin(event)">
+	<input type="text" placeholder="Standard Input" id="stdin" class="input-block-level" style="margin-top:-15px; display: none;" onKeyPress="return update_stdin(event)">
 </div>
 <br>
