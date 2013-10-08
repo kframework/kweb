@@ -336,6 +336,7 @@ function autoload() {
   $("#code_input").linenumbers({col_width: '50px', col_height: '330px'});
   $("body").click(function() { window.setTimeout(clear_dropdowns, 5); });
   $("#code_input").bind("input propertychange", update_code);
+  $("#file_browser").scrollTo("#" + window.autoload);
   $.support.cors = true;
   if (window.autoload.length) {
     document.getElementById(window.autoload).click();
