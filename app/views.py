@@ -55,13 +55,21 @@ def forgot():
 @app.route('/run/', defaults={'tool': DEFAULT_TOOL})
 @app.route('/run/<string:tool>')
 def base_run(tool):
-    return render_template('run.html', title = 'Run ' + tool.upper() + ' Online', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', 'tutorial/', type = str), hidden = request.args.get('hidden', 0, type=int), autoload = request.args.get('autoload', '', type=str))
+    return run(tool, False)
 
 # Embedded tool execution page with no header.
 @app.route('/run_embed/', defaults={'tool': DEFAULT_TOOL})
 @app.route('/run_embed/<string:tool>')
 def embed_run(tool):
-    response = make_response(render_template('run_embed.html', title = 'Run ' + tool.upper() + ' Online', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', '', type = str), hidden = request.args.get('hidden', 0, type=int), autoload = request.args.get('autoload', '', type=str)))
+    return run(tool, True)
+
+# Render main (run) page
+# embed - True if page is to be embedded
+def run(tool, embed):
+    template = 'run_embed.html' if embed else 'run.html'
+    autoload = request.args.get('autoload', '', type=str)
+    open_path = '/'.join(os.path.split(autoload)[:-1]) + "/"
+    response = make_response(render_template(template, title = 'Run ' + tool.upper() + ' Online', tool=tool, collections=get_current_collections(), open_path = open_path, hidden = request.args.get('hidden', 0, type=int), autoload = autoload))
     # This is a hack to get around issues embedding pages with cookies in IE
     response.headers['P3P'] = 'CP="No compact P3P policy available!"'
     return response
