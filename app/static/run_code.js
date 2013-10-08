@@ -28,7 +28,7 @@ function calculate(action, stdin) {
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';
         $("#stdin-initial").val("");
-        document.getElementById("stdin-inital").style.display = 'none';
+        document.getElementById("stdin-initial").style.display = 'none';
         if (stdin) {
           document.getElementById("stdin").style.display = 'block';
           $("#stdin").focus();
@@ -64,8 +64,8 @@ function update_result() {
           if (data.done) {
             update_file_browser();   
             document.getElementById("loader").style.display = 'none';
-            document.getElementById("stdin-inital").style.display = 'none';
-            document.getElementById("stdin-inital").style.display = 'none';
+            document.getElementById("stdin-initial").style.display = 'block';
+            document.getElementById("stdin").style.display = 'none';
           }
           else {
            window.setTimeout(update_result, 1500);
