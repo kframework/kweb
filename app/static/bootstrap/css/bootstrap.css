@@ -9,7 +9,11 @@
  *
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  */
- 
+
+input:-ms-input-placeholder:focus{
+    color: #999;
+}
+
 .content-left {
     border-right: 1px dashed #333;
 }

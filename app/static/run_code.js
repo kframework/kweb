@@ -336,16 +336,16 @@ function autoload() {
   $("#code_input").linenumbers({col_width: '50px', col_height: '330px'});
   $("body").click(function() { window.setTimeout(clear_dropdowns, 5); });
   $("#code_input").bind("input propertychange", update_code);
-  $("#file_browser").scrollTo("#" + window.autoload);
   $.support.cors = true;
   if (window.autoload.length) {
     document.getElementById(window.autoload).click();
+    scroll_to($("#file_browser"), $("#" + jqSelector(window.autoload)));
   }
   show_controls_if_touch_device();
 }
 
 function jqSelector(str) {
-  return str.replace(/([;&,\.\+\*\~':"\!\^#$%@\[\]\(\)=>\|])/g, '\\$1');
+  return str.replace(/([;&,\.\+\/\*\~':"\!\^#$%@\[\]\(\)=>\|])/g, '\\$1');
 }
 
 function urlencode (str) {
@@ -404,7 +404,14 @@ function show_controls_if_touch_device() {
   }
 }
 
-http://stackoverflow.com/questions/4549894/how-can-i-repeat-strings-in-javascript
+// http://stackoverflow.com/questions/2905867/how-to-scroll-to-specific-item-using-jquery
+function scroll_to(container, scrollTo) {
+    container.scrollTop(
+        scrollTo.offset().top - container.offset().top + container.scrollTop()
+    );
+}
+
+// http://stackoverflow.com/questions/4549894/how-can-i-repeat-strings-in-javascript
 String.prototype.repeat = function(times) {
    return (new Array(times + 1)).join(this);
 };
