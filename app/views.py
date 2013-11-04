@@ -7,7 +7,7 @@ from config import *
 from mails import *
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from collection_tools import *
-import hashlib, uuid, time, shutil, os
+import hashlib, uuid, time, shutil, os, htmlmin, diff_match_patch
 from werkzeug import secure_filename
 from ansi2html import Ansi2HTMLConverter
 
@@ -178,7 +178,7 @@ def update_result(curr_id):
 
 @app.route('/_file_browser/<string:tool>')
 def file_browser(tool):
-    return render_template('file_browser.html', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', None, type = str), hidden = request.args.get('hidden', 0, type=int))
+    return htmlmin.minify(render_template('file_browser.html', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', None, type = str), hidden = request.args.get('hidden', 0, type=int)))
 
 @app.route('/_update_stdin/<string:curr_id>')
 def update_stdin(curr_id):
@@ -228,7 +228,7 @@ def restore_file():
 # Internal Page (file save worker)
 @app.route('/_save_file', methods=['POST'])
 def save_file():
-    code = request.form.get('code', None, type = str)
+    patches_text = request.form.get('patches', None, type = str)
     path = request.form.get('path', None, type = str)
     file = request.form.get('file', None, type = str)
     if '..' in path or '..' in file or '~' in file or '~' in path:
@@ -242,9 +242,12 @@ def save_file():
     file_path = collection.get_collection_path() + path + file
     print 'Saving ' + file_path + ' in ' + str(collection_id)
     try:
-        file = open(file_path, 'w')
-        file.write(code)
-        file.close()
+        dmp = diff_match_patch.diff_match_patch()
+        current_file_text = open(file_path).read()
+        new_file_text = dmp.patch_apply(dmp.patch_fromText(patches_text), current_file_text)[0]
+        writefile = open(file_path, 'w')
+        writefile.write(new_file_text)
+        writefile.close()
         return jsonify(result='Save successful. ' + reload)
     except:
         return jsonify(result='Error: saving failed.  Please try reloading again, and if this does not work e-mail the webmaster (phil@linux.com) with information about what you were trying to save.')

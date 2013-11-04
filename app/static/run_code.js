@@ -6,6 +6,8 @@ window.uuid = '';
 window.last_code_keystroke = 0;
 window.last_save = 0;
 window.last_file_clicked = {}
+window.dmp = new diff_match_patch();
+window.last_saved_file_text = "";
 
 function calculate(action, stdin) {
   if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
@@ -90,14 +92,17 @@ function kill() {
 
 function save() {
   $("#save_info").text('Save in progress...');
+  var text_to_save = $("#code_input").val();
+  var patches = dmp.patch_toText(dmp.patch_make(window.last_saved_file_text, text_to_save));
+  var attempt_time = (new Date()).getTime();
   $.ajax({
        type: "POST",
        url: window.BASE_URL + '/_save_file',
-       data: {code: $('textarea[name="code"]').val(), file: window.file, path: window.path, collection_id: window.collection_id},
+       data: {patches: patches, file: window.file, path: window.path, collection_id: window.collection_id},
   }).done(function () {
       $("#save_info").text('Saved.');
-      window.last_save = (new Date()).getTime();
-      update_file_browser();    
+      window.last_save = attempt_time;
+      window.last_saved_file_text = text_to_save;
   });
   return false;
 }
@@ -171,6 +176,7 @@ function load_file(file, path, collection_id) {
   $("#code_input").val("Loading...");
   $.getJSON(window.BASE_URL + '/_load_file', {file: file, path: path, collection_id: collection_id}, 
     function(data) {
+      window.last_saved_file_text = data.result;
       $("#code_input").val(data.result);
       $("#code_input").triggerHandler("focus");
       $("#path").text(path + file);
