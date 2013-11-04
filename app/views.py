@@ -7,7 +7,7 @@ from config import *
 from mails import *
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from collection_tools import *
-import hashlib, uuid, time, shutil, os, htmlmin, diff_match_patch
+import hashlib, uuid, time, shutil, os, diff_match_patch
 from werkzeug import secure_filename
 from ansi2html import Ansi2HTMLConverter
 
@@ -178,7 +178,7 @@ def update_result(curr_id):
 
 @app.route('/_file_browser/<string:tool>')
 def file_browser(tool):
-    return htmlmin.minify(render_template('file_browser.html', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', None, type = str), hidden = request.args.get('hidden', 0, type=int)))
+    return render_template('file_browser.html', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', None, type = str), hidden = request.args.get('hidden', 0, type=int))
 
 @app.route('/_update_stdin/<string:curr_id>')
 def update_stdin(curr_id):
