@@ -121,7 +121,7 @@ def manage_collections():
                     collection.tool = editform.tool.data
                 if editform.description.data:
                     collection.description = editform.description.data
-                db.session.add(collection)
+                db.session.append(collection)
                 db.session.commit()
                 flash('Collection updated successfully', category='success')
             else:
@@ -430,7 +430,9 @@ def do_register(registerform):
         flash('Registration failed.  User already exists.', category='error')
         return redirect(url_for('login'))
     user = User(email=registerform.email.data, password='')
-    user.collections.extend(User.query.filter_by(email='default').first().collections)
+    for collection in User.query.filter_by(email='default').first().collections:
+       user.collections.append(collection) 
+       collection.copy_self(user)
     user.set_password(registerform.password.data)
     login_user(user)
     flash('Welcome to FSLRun!  Please feel free to browse the help provided above.', category='success')
