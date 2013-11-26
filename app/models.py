@@ -69,6 +69,7 @@ class User(db.Model):
                 self.collections.append(collection)
                 db.session.add(self)
                 db.session.commit()
+                collection.copy_self(self)
 
     # Unsubscribe user from collection collection_id
     def unsubscribe(self, collection_id):

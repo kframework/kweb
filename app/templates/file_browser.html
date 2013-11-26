@@ -1,8 +1,11 @@
 {% from "_dropdownhelpers.html" import render_directory %}
-{% if not g.count_collections(collections) %} You are not subscribed to any collections.  Press "settings" above to view available collections. {% endif %}
+{% if not g.count_collections(collections) %} You are not subscribed to any collections.  Press "settings" above to view available collections.
+{% else %}
+    <div class="alert" style="font-size: 15px; margin-bottom:5px;"><i class="icon-info-sign" style="padding-right:6px;"></i>Right click any item for options.</div>
 <ul>{% for collection in collections %}{% if collection.tool == tool %}<li><input type="checkbox" id="~collection~{{ collection.name }}" 
 {% if open_path and open_path.find(collection.name) == 0 %} checked="checked" {% else %} {% if hidden %}style="display:none;"{% endif %}{% endif %}
 /><label oncontextmenu="return spawn_dropdown_on(this, '', '', {{ collection.id }}, 'collection');" for="~collection~{{ collection.name }}"><div class="dropdown" style="display:inline;"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" title="View Menu" onclick="create_dropdown(this, '', '', {{ collection.id }}, 'collection', true);"><i style="display:none;" class="icon-list" style="margin-left: 5px;"></i></a></div> <p class="dropdown-label">{{ collection.name }}</p> </label>
     <ul>{{ render_directory(g.get_file_tree('', collection, open_path), hidden, collection.name) }}</ul>
     </li>{% endif %}{% endfor %}
 </ul>
+{% endif %}

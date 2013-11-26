@@ -1,6 +1,7 @@
 from flask import Flask, g
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
+from flask.ext.compress import Compress
 import shutil, os
 from config import BASE_DIR, SESSION_LIFETIME
 from werkzeug.local import LocalProxy
@@ -10,6 +11,7 @@ from datetime import timedelta
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+Compress(app)
 
 # Setup flask-loginmanager
 lm = LoginManager()

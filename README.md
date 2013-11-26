@@ -14,7 +14,7 @@ $ python virtalenv.py flask
 
 $ source flask/bin/activate
 
-$ pip install flask==0.9 flask-login sqlalchemy==0.8.1 flask-sqlalchemy==0.16 sqlalchemy-migrate flask-wtf ansi2html
+$ pip install flask==0.9 flask-login sqlalchemy==0.8.1 flask-sqlalchemy==0.16 sqlalchemy-migrate flask-wtf ansi2html diff_match_patch flask-compress
 
 $ cp sample_config.py config.py
 

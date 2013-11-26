@@ -6,7 +6,8 @@
 	{% else %}
 	<title>kweb</title>
 	{% endif %}
-	<script type=text/javascript src="{{url_for('static', filename='jquery.js') }}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='jquery.js') }}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='diff_match_patch.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
 	<script type=text/javascript>
 		window.BASE_URL = {{ request.script_root|tojson|safe }};

@@ -7,7 +7,7 @@ from config import *
 from mails import *
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from collection_tools import *
-import hashlib, uuid, time, shutil, os
+import hashlib, uuid, time, shutil, os, diff_match_patch
 from werkzeug import secure_filename
 from ansi2html import Ansi2HTMLConverter
 
@@ -55,13 +55,21 @@ def forgot():
 @app.route('/run/', defaults={'tool': DEFAULT_TOOL})
 @app.route('/run/<string:tool>')
 def base_run(tool):
-    return render_template('run.html', title = 'Run ' + tool.upper() + ' Online', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', 'tutorial/', type = str), hidden = request.args.get('hidden', 0, type=int), autoload = request.args.get('autoload', '', type=str))
+    return run(tool, False)
 
 # Embedded tool execution page with no header.
 @app.route('/run_embed/', defaults={'tool': DEFAULT_TOOL})
 @app.route('/run_embed/<string:tool>')
 def embed_run(tool):
-    response = make_response(render_template('run_embed.html', title = 'Run ' + tool.upper() + ' Online', tool=tool, collections=get_current_collections(), open_path = request.args.get('open_path', '', type = str), hidden = request.args.get('hidden', 0, type=int), autoload = request.args.get('autoload', '', type=str)))
+    return run(tool, True)
+
+# Render main (run) page
+# embed - True if page is to be embedded
+def run(tool, embed):
+    template = 'run_embed.html' if embed else 'run.html'
+    autoload = request.args.get('autoload', '', type=str)
+    open_path = '/'.join(os.path.split(autoload)[:-1]) + "/"
+    response = make_response(render_template(template, title = 'Run ' + tool.upper() + ' Online', tool=tool, collections=get_current_collections(), open_path = open_path, hidden = request.args.get('hidden', 0, type=int), autoload = autoload))
     # This is a hack to get around issues embedding pages with cookies in IE
     response.headers['P3P'] = 'CP="No compact P3P policy available!"'
     return response
@@ -113,7 +121,7 @@ def manage_collections():
                     collection.tool = editform.tool.data
                 if editform.description.data:
                     collection.description = editform.description.data
-                db.session.add(collection)
+                db.session.append(collection)
                 db.session.commit()
                 flash('Collection updated successfully', category='success')
             else:
@@ -147,6 +155,7 @@ def run_code():
     current_file = request.args.get('file', None, type = str)
     collection_id = request.args.get('collection_id', None, type = int)
     args = request.args.get('args', '', type = str)
+    stdin = request.args.get('stdin', None, type = str)
     collection = get_collection(collection_id)
     if collection:
         current_path = collection.get_collection_path() + path
@@ -155,7 +164,7 @@ def run_code():
         current_file = None
         args = ''
         code = None
-    return jsonify(result = parse_code(code, 'k', action, current_path, current_file, args))
+    return jsonify(result = parse_code(code, 'k', action, current_path, current_file, args, stdin))
 
 # Internal Page (result div update worker)
 @app.route('/_update_result/<string:curr_id>')
@@ -179,7 +188,7 @@ def update_stdin(curr_id):
     try:
         base_path = BASE_DIR + 'results/' + curr_id
         if (os.path.exists(base_path + '.done')):
-            return jsonify(success=False, error='No process currently running.')
+            return jsonify(success=False, error='No process currently running.  Start a process to consume the buffer.')
         fd = int(open(base_path + '.in').read())
         print 'FD: ' + str(fd)
         os.write(fd, stdin + '\n')
@@ -219,7 +228,7 @@ def restore_file():
 # Internal Page (file save worker)
 @app.route('/_save_file', methods=['POST'])
 def save_file():
-    code = request.form.get('code', None, type = str)
+    patches_text = request.form.get('patches', None, type = str)
     path = request.form.get('path', None, type = str)
     file = request.form.get('file', None, type = str)
     if '..' in path or '..' in file or '~' in file or '~' in path:
@@ -233,9 +242,12 @@ def save_file():
     file_path = collection.get_collection_path() + path + file
     print 'Saving ' + file_path + ' in ' + str(collection_id)
     try:
-        file = open(file_path, 'w')
-        file.write(code)
-        file.close()
+        dmp = diff_match_patch.diff_match_patch()
+        current_file_text = open(file_path).read()
+        new_file_text = dmp.patch_apply(dmp.patch_fromText(patches_text), current_file_text)[0]
+        writefile = open(file_path, 'w')
+        writefile.write(new_file_text)
+        writefile.close()
         return jsonify(result='Save successful. ' + reload)
     except:
         return jsonify(result='Error: saving failed.  Please try reloading again, and if this does not work e-mail the webmaster (phil@linux.com) with information about what you were trying to save.')
@@ -418,7 +430,9 @@ def do_register(registerform):
         flash('Registration failed.  User already exists.', category='error')
         return redirect(url_for('login'))
     user = User(email=registerform.email.data, password='')
-    user.collections.extend(User.query.filter_by(email='default').first().collections)
+    for collection in User.query.filter_by(email='default').first().collections:
+       user.collections.append(collection) 
+       collection.copy_self(user)
     user.set_password(registerform.password.data)
     login_user(user)
     flash('Welcome to FSLRun!  Please feel free to browse the help provided above.', category='success')
@@ -479,9 +493,9 @@ def get_file_tree(path, collection, open_path):
         return files
 
 # Process the user input
-def parse_code(code, tool, action, path, current_file, args):
+def parse_code(code, tool, action, path, current_file, args, stdin):
     curr_id = str(uuid.uuid4())
-    command = Command(code, tool, action, path, current_file, curr_id, args)
+    command = Command(code, tool, action, path, current_file, curr_id, args, stdin)
     command.run()
     return curr_id
 

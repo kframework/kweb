@@ -6,6 +6,8 @@ window.uuid = '';
 window.last_code_keystroke = 0;
 window.last_save = 0;
 window.last_file_clicked = {}
+window.dmp = new diff_match_patch();
+window.last_saved_file_text = "";
 
 function calculate(action, stdin) {
   if ((window.last_code_keystroke > window.last_save) && window.collection_id) {
@@ -23,10 +25,12 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
-  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val()}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';
+        $("#stdin-initial").val("");
+        document.getElementById("stdin-initial").style.display = 'none';
         if (stdin) {
           document.getElementById("stdin").style.display = 'block';
           $("#stdin").focus();
@@ -57,13 +61,13 @@ function update_result() {
         {
           if ($("#result").html() !== data.result) {
             $("#result").html(data.result);
-            if (document.getElementById("stdin").style.display !== 'none')
-              $.scrollTo(document.getElementById("stdin"));
+            $.scrollTo(document.getElementById("stdin"));
           }
           if (data.done) {
+            update_file_browser();   
             document.getElementById("loader").style.display = 'none';
+            document.getElementById("stdin-initial").style.display = 'block';
             document.getElementById("stdin").style.display = 'none';
-            update_file_browser();            
           }
           else {
            window.setTimeout(update_result, 1500);
@@ -88,14 +92,17 @@ function kill() {
 
 function save() {
   $("#save_info").text('Save in progress...');
+  var text_to_save = $("#code_input").val();
+  var patches = dmp.patch_toText(dmp.patch_make(window.last_saved_file_text, text_to_save));
+  var attempt_time = (new Date()).getTime();
   $.ajax({
        type: "POST",
        url: window.BASE_URL + '/_save_file',
-       data: {code: $('textarea[name="code"]').val(), file: window.file, path: window.path, collection_id: window.collection_id},
+       data: {patches: patches, file: window.file, path: window.path, collection_id: window.collection_id},
   }).done(function () {
       $("#save_info").text('Saved.');
-      window.last_save = (new Date()).getTime();
-      update_file_browser();    
+      window.last_save = attempt_time;
+      window.last_saved_file_text = text_to_save;
   });
   return false;
 }
@@ -116,11 +123,15 @@ function autofill_file_arg(file, path, collection_id) {
       last_file_clicked["krun"] = file_info;
     }
     if (last_file_clicked["krun"]) {
-      $("#krunargs").val(get_relative_path(last_file_clicked["krun"]) + (last_file_clicked["kompile"] ? (" -k-definition " + get_relative_path(last_file_clicked["kompile"])) : ""));
+      var last_kompiled = get_relative_path(last_file_clicked["kompile"]);
+      var last_kompiled_argument = "";
+      if (last_kompiled.indexOf("/") != -1)
+        last_kompiled_argument = " -d " + last_kompiled.substring(0, last_kompiled.lastIndexOf('/'));
+      $("#krunargs").val(get_relative_path(last_file_clicked["krun"]) + last_kompiled_argument);
     }
     if (last_file_clicked["kompile"]) {
       var kompile_path = get_relative_path(last_file_clicked["kompile"]);
-      $("#kompileargs").val(kompile_path + ((kompile_path.indexOf("/") != -1) ? (" -o " + kompile_path.replace(".k", "-kompiled") + "/") : ""));
+      $("#kompileargs").val(kompile_path);
     }
   }
 }
@@ -165,6 +176,7 @@ function load_file(file, path, collection_id) {
   $("#code_input").val("Loading...");
   $.getJSON(window.BASE_URL + '/_load_file', {file: file, path: path, collection_id: collection_id}, 
     function(data) {
+      window.last_saved_file_text = data.result;
       $("#code_input").val(data.result);
       $("#code_input").triggerHandler("focus");
       $("#path").text(path + file);
@@ -333,12 +345,13 @@ function autoload() {
   $.support.cors = true;
   if (window.autoload.length) {
     document.getElementById(window.autoload).click();
+    scroll_to($("#file_browser"), $("#" + jqSelector(window.autoload)));
   }
   show_controls_if_touch_device();
 }
 
 function jqSelector(str) {
-  return str.replace(/([;&,\.\+\*\~':"\!\^#$%@\[\]\(\)=>\|])/g, '\\$1');
+  return str.replace(/([;&,\.\+\/\*\~':"\!\^#$%@\[\]\(\)=>\|])/g, '\\$1');
 }
 
 function urlencode (str) {
@@ -397,7 +410,14 @@ function show_controls_if_touch_device() {
   }
 }
 
-http://stackoverflow.com/questions/4549894/how-can-i-repeat-strings-in-javascript
+// http://stackoverflow.com/questions/2905867/how-to-scroll-to-specific-item-using-jquery
+function scroll_to(container, scrollTo) {
+    container.scrollTop(
+        scrollTo.offset().top - container.offset().top + container.scrollTop()
+    );
+}
+
+// http://stackoverflow.com/questions/4549894/how-can-i-repeat-strings-in-javascript
 String.prototype.repeat = function(times) {
    return (new Array(times + 1)).join(this);
 };
