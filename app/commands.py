@@ -36,40 +36,30 @@ class Command(object):
                 add_string = (' ' + self.current_file) if (self.args and len(self.args.strip())) else self.current_file
                 if has_file_arg:
                     add_string = ''
-                if self.action.lower() == 'kompile':
-                    if not '.k' in self.current_file and not len(self.args):
-                        self.output_file.write('Invalid file type!  File must end in .k to be kompiled!\n')
-                    else:
-                        self.output_file.write('Running command: kompile ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
-                        self.output_file.flush()
-                        self.process = subprocess.Popen(['/k/bin/kompile'] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
-                        open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
-                        self.process.wait()
-                        empty = (len(open(base_file_path).read().strip().splitlines()) == 1)
-                        self.output_file.write('----- End of process output')
-                        if empty:
-                            self.output_file.write(' (no output indicates a successful kompile)')
-                        self.output_file.write('.\n')
-                elif self.action.lower() == 'krun':
-                    self.output_file.write('Running command: krun ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
-                    self.output_file.flush()
-                    self.process = subprocess.Popen(['/k/bin/krun'] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
-                    self.process.stdin.write(self.initial_stdin + '\n')
-                    open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
-                    self.process.wait()
-                    self.output_file.write('----- End of process output.\n')
-                elif self.action.lower() == 'krun-help':
-                    self.output_file.write('Running command: krun --help\n')
-                    self.output_file.flush()
-                    self.process = subprocess.Popen(['/k/bin/krun', '--help'], stdout=self.output_file, stderr = subprocess.PIPE, stdin=subprocess.PIPE, shell=False)
-                    open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
-                    self.process.wait()
-                elif self.action.lower() == 'kompile-help':
-                    self.output_file.write('Running command: kompile --help\n')
-                    self.output_file.flush()
-                    self.process = subprocess.Popen(['/k/bin/kompile', '--help'], stdout=self.output_file, stderr = subprocess.PIPE, stdin=subprocess.PIPE, shell=False)
-                    open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
-                    self.process.wait()
+                if self.action.lower() == 'kompile' and not '.k' in self.current_file and not len(self.args):
+                    self.output_file.write('Invalid file type!  File must end in .k to be kompiled!\n')
+                else:
+                    # @todo : generalize this
+                    for user_action in ['krun', 'ktest', 'kompile']:
+                        if self.action.lower() == user_action:
+                            self.output_file.write('Running command: ' + user_action + ' ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
+                            self.output_file.flush()
+                            self.process = subprocess.Popen(['/k/bin/' + user_action] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
+                            self.process.stdin.write(self.initial_stdin + '\n')
+                            open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
+                            self.process.wait()
+                            empty = (len(open(base_file_path).read().strip().splitlines()) == 1)
+                            self.output_file.write('----- End of process output')
+                            if empty and user_action == 'kompile':
+                                self.output_file.write(' (no output indicates a successful kompile)')
+                            self.output_file.write('.\n')
+                        elif self.action.lower() == user_action + '-help':
+                            self.output_file.write('Running command: '+ user_action +' --help\n')
+                            self.output_file.flush()
+                            self.process = subprocess.Popen(['/k/bin/' + user_action, '--help'], stdout=self.output_file, stderr = subprocess.PIPE, stdin=subprocess.PIPE, shell=False)
+                            open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
+                            self.process.wait()
+
             # Clean up after process
             self.done = True
             done_file = open(base_file_path + '.done', 'w')

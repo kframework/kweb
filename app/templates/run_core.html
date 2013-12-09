@@ -25,11 +25,13 @@
 			<i style="margin-left:-50px; color: grey;" id="save_info"></i>
 		</div>
 		{% for action in g.tools[tool]['actions'] %}
-		<div class="row-fluid input-append">
-			<button type="button" class="btn btn-primary pull-left" onclick="calculate('{{ action['action'] }}', {{ action['stdin'] }})" style="width:15%;">{{ action['action'] }}</button>
-			<a role="button" class="btn btn-success" onclick="help('{{ action['action'].lower() }}-help');" style="width:8%">Help</a>
-			<input type="text" placeholder="Command line arguments" id="{{ action['action'].lower() }}args" style="width:73%;" autocomplete="off" onKeyUp="update_args(this);">
-	    </div><br>
+			{% if not action['login_required'] or not g.user.is_anonymous() %}
+			<div class="row-fluid input-append">
+				<button type="button" class="btn btn-primary pull-left" onclick="calculate('{{ action['action'] }}', {{ action['stdin'] }})" style="width:15%;">{{ action['action'] }}</button>
+				<a role="button" class="btn btn-success" onclick="help('{{ action['action'].lower() }}-help');" style="width:8%">Help</a>
+				<input type="text" placeholder="Command line arguments" id="{{ action['action'].lower() }}args" style="width:73%;" autocomplete="off" onKeyUp="update_args(this);">
+		    </div><br>
+		    {% endif %}
 		{% endfor %}
 	</div>
 	<div class="css-treeview pull-right" style="width: 24%; margin:0; height:{{ 405 + g.len(g.tools[tool]['actions'])*35 }}px; overflow-x:auto;" id="file_browser">

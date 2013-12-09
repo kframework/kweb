@@ -113,11 +113,15 @@ function download_file(file, path, collection_id) {
   return false;
 }
 
+// @todo - generalize this method
 function autofill_file_arg(file, path, collection_id) {
   var file_info = [file, path, collection_id];
   if (window.tool === "k") {
     if (get_file_extension(file) === "k") {
       last_file_clicked["kompile"] = file_info;
+    }
+    else if (file.indexOf('config.xml') != -1) {
+      last_file_clicked["ktest"] = file_info;
     }
     else {
       last_file_clicked["krun"] = file_info;
@@ -129,12 +133,16 @@ function autofill_file_arg(file, path, collection_id) {
         last_kompiled_argument = " -d " + last_kompiled.substring(0, last_kompiled.lastIndexOf('/'));
       $("#krunargs").val(get_relative_path(last_file_clicked["krun"]) + last_kompiled_argument);
     }
-    if (last_file_clicked["kompile"]) {
-      var kompile_path = get_relative_path(last_file_clicked["kompile"]);
-      $("#kompileargs").val(kompile_path);
-    }
+    // @todo - Clean this up to not require manual customization for all new tools
+    $.each(["kompile", "ktest"], function(i, action) {
+      if (last_file_clicked[action]) {
+        var action_path = get_relative_path(last_file_clicked[action]);
+        $("#" + action + "args").val(action_path);
+      }
+    });
   }
 }
+
 
 function get_relative_path(file_info) {
   if (file_info[2] != window.collection_id) {
