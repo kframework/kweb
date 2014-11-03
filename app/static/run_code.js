@@ -25,7 +25,7 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
-  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {code: "", tool: tool, path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';

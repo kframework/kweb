@@ -149,6 +149,7 @@ def settings():
 # Internal Page (tool execution worker)
 @app.route('/_run_code')
 def run_code():
+    tool = request.args.get('tool', None, type = str)
     code = request.args.get('code', None, type = str)
     action = request.args.get('action', None, type = str)
     path = request.args.get('path', None, type = str)
@@ -164,7 +165,7 @@ def run_code():
         current_file = None
         args = ''
         code = None
-    return jsonify(result = parse_code(code, 'k', action, current_path, current_file, args, stdin))
+    return jsonify(result = parse_code(code, tool, action, current_path, current_file, args, stdin))
 
 # Internal Page (result div update worker)
 @app.route('/_update_result/<string:curr_id>')
