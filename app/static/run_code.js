@@ -25,7 +25,7 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
-  $.getJSON(window.BASE_URL + '/_run_code', {code: "", tool: tool, path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {code: "", tool: window.tool, path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';
@@ -45,7 +45,7 @@ function calculate(action, stdin) {
 function help(action) {
   $("#result").html("<pre>\n\n</pre>");
   document.getElementById("result").style.visibility="visible";
-  $.getJSON(window.BASE_URL + '/_run_code', {action: action, collection_id : -1}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {tool: window.tool, action: action, collection_id : -1}, 
       function(data) { 
         document.getElementById("loader").style.display = 'block';
         window.uuid = data.result;

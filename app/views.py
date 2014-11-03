@@ -159,13 +159,15 @@ def run_code():
     stdin = request.args.get('stdin', None, type = str)
     collection = get_collection(collection_id)
     if collection:
-        current_path = collection.get_collection_path() + path
+        collection_path = collection.get_collection_path()
+        current_path = collection_path + path
     else:
+        collection_path = None
         current_path = None
         current_file = None
         args = ''
         code = None
-    return jsonify(result = parse_code(code, tool, action, current_path, current_file, args, stdin))
+    return jsonify(result = parse_code(code, tool, action, collection_path, current_path, current_file, args, stdin))
 
 # Internal Page (result div update worker)
 @app.route('/_update_result/<string:curr_id>')
@@ -494,9 +496,9 @@ def get_file_tree(path, collection, open_path):
         return files
 
 # Process the user input
-def parse_code(code, tool, action, path, current_file, args, stdin):
+def parse_code(code, tool, action, root, path, current_file, args, stdin):
     curr_id = str(uuid.uuid4())
-    command = Command(code, tool, action, path, current_file, curr_id, args, stdin)
+    command = Command(code, tool, action, root, path, current_file, curr_id, args, stdin)
     command.run()
     return curr_id
 
