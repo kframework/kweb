@@ -9,7 +9,7 @@
 <div class="row-fluid">
     <div class="pull-left" style="width:75%; margin:0;">
     	<div style="overflow:hidden;">
-        	<textarea name="code" id="code_input" style="width:100%; height:330px; font-family:monospace; color: black;" autocomplete="off" spellcheck="off"></textarea>
+        	<textarea name="code" id="code_input" style="width:100%; height:430px; font-family:monospace; color: black;" autocomplete="off" spellcheck="off"></textarea>
     	</div>
     	<div id="upload_form" class="pull-right" style="display:none;">
 			<form action="{{ url_for('upload_file') }}" method=post enctype=multipart/form-data>
@@ -34,7 +34,7 @@
 		    {% endif %}
 		{% endfor %}
 	</div>
-	<div class="css-treeview pull-right" style="width: 24%; margin:0; height:{{ 405 + g.len(g.tools[tool]['actions'])*35 }}px; overflow-x:auto;" id="file_browser">
+	<div class="css-treeview pull-right" style="width: 24%; margin:0; height:{{ 505 + (g.len(g.tools[tool]['actions'])-1)*35 }}px; overflow-x:auto;" id="file_browser">
 		{% include "file_browser.html" %}
 	</div>
 </div> 
