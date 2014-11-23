@@ -44,7 +44,7 @@ class Command(object):
                         if self.action.lower() == user_action:
                             self.output_file.write('Running command: ' + user_action + ' ' + ' '.join(shlex.split(self.args)) + add_string + '\n')
                             self.output_file.flush()
-                            self.process = subprocess.Popen(['/k/bin/' + user_action] + shlex.split(self.args) + [self.current_file], stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
+                            self.process = subprocess.Popen(['/k/bin/' + user_action] + shlex.split(self.args), stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd = self.path)
                             self.process.stdin.write(self.initial_stdin + '\n')
                             open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
                             self.process.wait()
@@ -53,6 +53,14 @@ class Command(object):
                             if empty and user_action == 'kompile':
                                 self.output_file.write(' (no output indicates a successful kompile)')
                             self.output_file.write('.\n')
+                            if user_action == 'ktest':
+                                # Collect ktest report for future handins.
+                                try:
+                                    for files in os.listdir(self.path + '/junit-reports/'):
+                                        if files.endswith(".xml"):
+                                            open(base_file_path + '.report', 'w').write(open(os.path + '/' + files).read())
+                                except:
+                                    pass
                         elif self.action.lower() == user_action + '-help':
                             self.output_file.write('Running command: '+ user_action +' --help\n')
                             self.output_file.flush()
