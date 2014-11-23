@@ -25,7 +25,7 @@ function calculate(action, stdin) {
     alert('No file selected, please select a file');
     return false;
   }
-  $.getJSON(window.BASE_URL + '/_run_code', {code: "", path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {code: "", tool: window.tool, path: window.path, action: action, file: window.file, collection_id : window.collection_id, args: $("#"+action.toLowerCase()+"args").val(), stdin: $("#stdin-initial").val()}, 
       function(data) { 
         document.getElementById("result").style.visibility="visible";
         document.getElementById("loader").style.display = 'block';
@@ -45,7 +45,7 @@ function calculate(action, stdin) {
 function help(action) {
   $("#result").html("<pre>\n\n</pre>");
   document.getElementById("result").style.visibility="visible";
-  $.getJSON(window.BASE_URL + '/_run_code', {action: action, collection_id : -1}, 
+  $.getJSON(window.BASE_URL + '/_run_code', {tool: window.tool, action: action, collection_id : -1}, 
       function(data) { 
         document.getElementById("loader").style.display = 'block';
         window.uuid = data.result;
@@ -141,8 +141,41 @@ function autofill_file_arg(file, path, collection_id) {
       }
     });
   }
+  // @todo - this is a really bad solution, we should change this
+  else if (window.tool === "javamop") {
+  	if (get_file_extension(file) === "java") {
+  		var abs_path = get_absolute_path(file_info);
+		$("#runargs").val(abs_path);
+		var old_arg = $("#monitorargs").val().split(" ");
+		var new_arg = "";
+		if (old_arg.length > 1)
+			new_arg = abs_path + " " + old_arg[1];
+		else if (old_arg.length > 0 && old_arg[0].substr(-4) === ".mop")
+			new_arg = abs_path + " " + old_arg[0];
+		else 
+			new_arg = abs_path;
+		$("#monitorargs").val(new_arg);
+    }		
+    else if (get_file_extension(file) === "mop") {
+    	var abs_path = get_absolute_path(file_info);
+    	var old_arg = $("#monitorargs").val().split(" ");
+		var new_arg = "";
+		if (old_arg.length > 1 || (old_arg.length > 0 && old_arg[0].substr(-5) === ".java"))
+			new_arg =  old_arg[0] + " " + abs_path
+		else 
+			new_arg = abs_path;
+		$("#monitorargs").val(new_arg);
+    }
+  }
 }
 
+function get_absolute_path(file_info) {
+	if (file_info[2] != window.collection_id) {
+    	// User has changed collections, currently stored info is garbage
+    	return '';
+    }
+    return file_info[1] + file_info[0];
+}
 
 function get_relative_path(file_info) {
   if (file_info[2] != window.collection_id) {

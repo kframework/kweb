@@ -21,8 +21,13 @@ APP_DIR = '/home/kuser/fslrun/'
 # stdin: 1 allow standard input capture
 TOOLS = {
     'k': {'actions': [
-                        {'action': 'Kompile', 'stdin': 0},
-                        {'action': 'KRun', 'stdin': 1}
+                        {'action': 'Kompile', 'stdin': 0, 'edit_args': 1},
+                        {'action': 'KRun', 'stdin': 1, 'edit_args': 1}
+                     ]
+         },
+    'javamop': {'actions': [
+                        {'action': 'Run', 'stdin': 1},
+                        {'action': 'Monitor', 'stdin': 1}
                      ]
          }
 }

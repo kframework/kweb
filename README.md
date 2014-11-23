@@ -10,7 +10,7 @@ Setup is fairly simple.  First, ensure you have Python 2.7 installed.
 
 Then, perform the following steps (Python is short for your Python interpreter).
 
-$ python virtalenv.py flask
+$ python virtualenv.py flask
 
 $ source flask/bin/activate
 

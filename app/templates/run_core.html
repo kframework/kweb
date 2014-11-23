@@ -29,7 +29,11 @@
 			<div class="row-fluid input-append">
 				<button type="button" class="btn btn-primary pull-left" onclick="calculate('{{ action['action'] }}', {{ action['stdin'] }})" style="width:15%;">{{ action['action'] }}</button>
 				<a role="button" class="btn btn-success" onclick="help('{{ action['action'].lower() }}-help');" style="width:8%">Help</a>
-				<input type="text" placeholder="Command line arguments" id="{{ action['action'].lower() }}args" style="width:73%;" autocomplete="off" onKeyUp="update_args(this);">
+                {% if action['edit_args'] %}
+				    <input type="text" placeholder="Command line arguments" id="{{ action['action'].lower() }}args" style="width:73%;" autocomplete="off" onKeyUp="update_args(this);">
+                {% else %}
+                    <input type="text" id="{{ action['action'].lower() }}args" style="width:73%;" autocomplete="off" onKeyUp="update_args(this);" disabled="disabled">
+                {% endif %}
 		    </div><br>
 		    {% endif %}
 		{% endfor %}
