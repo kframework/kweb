@@ -172,7 +172,7 @@ def update_result(curr_id):
     try:
         base_path = BASE_DIR + 'results/' + curr_id
         conv = Ansi2HTMLConverter()
-        return jsonify(result = conv.convert(open(base_path).read().strip()), done=os.path.exists(base_path+'.done'))
+        return jsonify(result = conv.convert(open(base_path).read().strip()), done=os.path.exists(base_path+'.done'), submittable=os.path.exists(base_path+'.report'))
     except:
         return jsonify(result = 'No jobs pending.', done=False)
 

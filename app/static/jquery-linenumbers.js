@@ -3,7 +3,7 @@
 		// Settings and Defaults
 		var opt = $.extend({
 			col_width: '25px',
-			col_height: '330px',
+			col_height: '430px',
 			start: 1,
 			digits: 4.
 		},in_opts);
@@ -11,7 +11,7 @@
 			// Get some numbers sorted out for the CSS changes
 			var new_textarea_width = (parseInt($(this).css('width'))-parseInt(opt.col_width))+'px';
 			// Create the div and the new textarea and style it
-			$(this).parent().before('<label for="code_input" style="float:left;"><textarea style="width:'+ opt.col_width + ';font-family:monospace;white-space:pre;overflow:hidden;resize:none !important;height:' + opt.col_height + ';text-align:right;" disabled="disabled" id="line_numbers"></textarea></label>');			// Edit the existing textarea's styles
+			$(this).parent().before('<label for="code_input" style="float:left;"><textarea style="width:'+ opt.col_width + ';font-family:monospace;white-space:pre;overflow:hidden;resize:none !important;height:430px;text-align:right;" disabled="disabled" id="line_numbers"></textarea></label>');			// Edit the existing textarea's styles
 			$(this).css({'width': '98%'});
 			// Define a simple variable for the line-numbers box
 			var lnbox = $(this).parent().parent().find('textarea[disabled="disabled"]');
