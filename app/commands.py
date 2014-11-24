@@ -70,74 +70,80 @@ class Command(object):
                             self.process.wait()
             # @todo : super messy, clean up!
             elif self.tool.lower() == 'javamop':
+                def extract_path_and_name(file):
+                    file_path = self.root + '/' + "/".join(file.split('/')[:-1]) + '/'
+                    file_name = file.split('/')[-1]
+                    return file_path, file_name
+
+                def print_action(action):
+                    self.output_file.write('>>> ' + ' '.join(action) + '\n')
+                    self.output_file.flush()
+
+                def run_action(action, cwd, allow_input=False):
+                    self.process = subprocess.Popen(action, stdout=self.output_file, stderr= self.output_file, stdin=subprocess.PIPE, shell=False, cwd=cwd)
+                    if allow_input:
+                        self.process.stdin.write(self.initial_stdin + '\n')
+                        open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
+                    self.process.wait()
+                    return self.process.returncode
+
+                def javac(java_file_path, java_file_name):
+                    action = ['javac', java_file_name]
+                    print_action(action)
+                    rc = run_action(action, java_file_path)
+                    if rc is not 0:
+                        self.output_file.write('>>> Error in compilation!\n')
+                        return False
+                    return True
+
+                def java(entry_point, cwd, agent=None):
+                    action = ['java', entry_point]
+                    if agent:
+                        action.insert(1, '-javaagent:' + agent)
+                    print_action(action)
+                    rc = run_action(action, cwd, allow_input=True)
+                    if rc == 0:
+                        self.output_file.write('>>> Program executed successfully!\n')
+                        return True
+                    else:
+                        self.output_file.write('>>> Error in executing the program!\n')
+                        return False
+
+                def print_help(action):
+                    if action == 'run':
+                        self.output_file.write('Select a java file to compile and run!\n')
+                    elif action == 'monitor':
+                        self.output_file.write('Select a java file and a property (.mop) file to (compile and) run the '
+                                               'java file while monitoring for the property!\n')
+
+
                 if self.action.lower() == 'run':
                     if len(self.args.split()) < 1:
-                        self.output_file.write('Select a java file to compile and run!\n')
+                        print_help('run')
                     else:
-                        java_file_name = self.args.split('/')[-1]
-                        java_file_path = self.root + "/".join(self.args.split('/')[:-1])
-                        action = ['javac', java_file_name]
-                        self.output_file.write('>>> ' + ' '.join(action) + '\n')
-                        self.output_file.flush()
-                        self.process = subprocess.Popen(action, stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd=java_file_path)
-                        self.process.wait()
-                        if self.process.returncode is not 0:
-                            self.output_file.write('>>> Error in compilation!\n')
-                        else:
-                            action = ['java', java_file_name[:-5]]
-                            self.output_file.write('>>> ' + ' '.join(action) + '\n')
-                            self.output_file.flush()
-                            self.process = subprocess.Popen(action, stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd=java_file_path)
-                            self.process.stdin.write(self.initial_stdin + '\n')
-                            open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
-                            self.process.wait()
-                            if self.process.returncode == 0:
-                                self.output_file.write('>>> Program executed successfully!\n')
-                            else:
-                                self.output_file.write('>>> Error in executing the program!\n')
+                        (java_file_path, java_file_name) = extract_path_and_name(self.args)
+                        if javac(java_file_path, java_file_name):
+                            java(java_file_name[:-5], java_file_path)
                 elif self.action.lower() == 'run-help':
-                    self.output_file.write('Select a java file to compile and run without monitoring!\n')
-                if self.action.lower() == 'monitor':
+                    print_help('run')
+                elif self.action.lower() == 'monitor':
                     args = shlex.split(self.args)
                     if len(args) < 2:
-                        self.output_file.write('Select a java file and a property (.mop) file to (compile and) run the java file while monitoring the property!\n')
+                        print_help('monitor')
                     else:
-                        java_file_name = args[0].split('/')[-1]
-                        java_file_path = self.root + "/".join(args[0].split('/')[:-1])
-                        mop_file_name = args[1].split('/')[-1]
-                        mop_file_path = self.root + "/".join(args[1].split('/')[:-1])
+                        (java_file_path, java_file_name) = extract_path_and_name(args[0])
+                        (mop_file_path, mop_file_name) = extract_path_and_name(args[1])
 
                         action = ['javamop', '-agent', mop_file_path + mop_file_name]
-                        self.output_file.write('>>> ' + ' '.join(action[:-1]) + ' ' + args[1] + '\n')
-                        self.output_file.flush()
-                        self.process = subprocess.Popen(action, stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd=java_file_path)
-                        self.process.wait()
-                        if self.process.returncode is not 0:
+                        print_action(action[:-1]+ [args[1]])
+                        rc = run_action(action, java_file_path)
+                        if rc is not 0:
                             self.output_file.write('>>> Error in generating the monitoring agent!\n')
                         else:
-                            action = ['javac', java_file_name]
-                            self.output_file.write('>>> ' + ' '.join(action) + '\n')
-                            self.output_file.flush()
-                            self.process = subprocess.Popen(action, stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd=java_file_path)
-                            self.process.wait()
-                            if self.process.returncode is not 0:
-                                self.output_file.write('>>> Error in compilation!\n')
-                            else:
-                                action = ['java', '-javaagent:' + mop_file_name[:-4] + ".jar", java_file_name[:-5]]
-                                self.output_file.write('>>> ' + ' '.join(action) + '\n')
-                                self.output_file.flush()
-                                self.process = subprocess.Popen(action, stdout=self.output_file, stderr = self.output_file, stdin=subprocess.PIPE, shell=False, cwd=java_file_path)
-                                self.process.stdin.write(self.initial_stdin + '\n')
-                                open(base_file_path + '.in', 'w').write(str(self.process.stdin.fileno()))
-                                self.process.wait()
-                                if self.process.returncode == 0:
-                                    self.output_file.write('>>> Program executed successfully!\n')
-                                else:
-                                    self.output_file.write('>>> Error in executing the program!\n')
+                            if javac(java_file_path, java_file_name):
+                                java(java_file_name[:-5], java_file_path, mop_file_name[:-4] + ".jar")
                 elif self.action.lower() == 'monitor-help':
-                    self.output_file.write('Select a java file and a property (.mop) file to (compile and) run the java file while monitoring the property!\n')
-
-
+                    print_help('monitor')
 
 
             # Clean up after process
