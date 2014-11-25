@@ -53,9 +53,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project Pages <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {% for name, tool in g.tools.iteritems() %}
-
+                        {% if tool['website'] %}
                             <li><a href="{{ tool['website'] }}"> {{ name.upper() }} </a></li>
-
+                        {% endif %}
                         {% endfor %}
                     </ul>
                 </li>
