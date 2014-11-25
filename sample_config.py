@@ -23,12 +23,15 @@ TOOLS = {
     'k': {'actions': [
                         {'action': 'Kompile', 'stdin': 0, 'edit_args': 1},
                         {'action': 'KRun', 'stdin': 1, 'edit_args': 1}
-                     ]
+                     ],
+            'website': 'http://www.kframework.org/'
          },
     'javamop': {'actions': [
                         {'action': 'Run', 'stdin': 1},
                         {'action': 'Monitor', 'stdin': 1}
-                     ]
+                     ],
+            'website': 'http://fsl.cs.illinois.edu/index.php/JavaMOP'
+
          }
 }
 
