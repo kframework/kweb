@@ -453,9 +453,16 @@ function show_controls_if_touch_device() {
 
 // http://stackoverflow.com/questions/2905867/how-to-scroll-to-specific-item-using-jquery
 function scroll_to(container, scrollTo) {
-    container.scrollTop(
-        scrollTo.offset().top - container.offset().top + container.scrollTop()
-    );
+    if (window.frameElement.offsetHeight == 0) {
+        // Application is embedded in hidden frame - scrolling will be broken on Chrome until revealed
+        // Check again later
+        setTimeout(function() { scroll_to(container, scrollTo); }, 500);
+    }
+    else {
+        container.scrollTop(
+            container.scrollTop() + (scrollTo.position().top - container.position().top)
+        );
+    }
 }
 
 // http://stackoverflow.com/questions/4549894/how-can-i-repeat-strings-in-javascript
