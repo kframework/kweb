@@ -9,7 +9,9 @@
 <div class="row-fluid">
     <div class="pull-left" style="width:75%; margin:0;">
     	<div style="overflow:hidden;">
-        	<textarea name="code" id="code_input" style="width:100%; height:430px; font-family:monospace; color: black;" autocomplete="off" spellcheck="off"></textarea>
+        	<textarea name="code" id="code_input" style="width:100%; height:430px; font-family:monospace; color: black;" autocomplete="off" spellcheck="off" disabled>To begin, select an existing file in the menu
+or
+create a new file by right clicking any directory.</textarea>
     	</div>
     	<div id="upload_form" class="pull-right" style="display:none;">
 			<form action="{{ url_for('upload_file') }}" method=post enctype=multipart/form-data>

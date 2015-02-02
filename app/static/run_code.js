@@ -214,6 +214,7 @@ function load_file(file, path, collection_id) {
   if (get_file_extension(file) === "pdf") {
     return download_file(file, path, collection_id);
   }
+  $("#code_input").prop("disabled", false);
   $("#code_input").val("Loading...");
   $.getJSON(window.BASE_URL + '/_load_file', {file: file, path: path, collection_id: collection_id}, 
     function(data) {
